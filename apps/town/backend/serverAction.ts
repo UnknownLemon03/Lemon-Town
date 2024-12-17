@@ -1,8 +1,9 @@
 'use server'
 import { PreviewData } from "next";
-import { AddNewRoomDB, DeleteRoomDB } from "./database";
+import { AddNewRoomDB, DeleteRoomDB, SignIn, SignUp } from "./database";
 import { revalidatePath } from "next/cache";
 import { error } from "console";
+import { CreateJWTSession, GetJWTSession } from "./Auth";
 
 export async function AddRoomServerAction(formState:PreviewData,formData:FormData){
     const data = {
@@ -24,5 +25,29 @@ export async function DeleteRoomServerAction(formState:PreviewData,formData:Form
     const id = parseInt(formData.get('id') as string);
     const req = await DeleteRoomDB(id);
     revalidatePath("/dashboard/rooms","layout")
+    return req;
+}
+
+export async function SignUpServerAction(formState:PreviewData,formData:FormData){
+        const data = {
+            name:(formData.get("name") != "" ?  formData.get("name")  : "Unknown") as string,
+            email:formData.get("email")! as string,
+            password:formData.get("password")! as string,
+        };
+        const req = await SignUp(data)
+        console.log(req)
+        if(req.success && req.data)
+            await CreateJWTSession(req.data);
+        await GetJWTSession()
+        return req;
+}
+
+export async function SignInServerAction(formState:PreviewData,formData:FormData){
+    const data = {
+        email:formData.get("email")! as string,
+        password:formData.get("password")! as string,
+    };
+    const req = await SignIn(data)
+    console.log(req);   
     return req;
 }

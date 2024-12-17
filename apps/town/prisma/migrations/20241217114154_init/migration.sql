@@ -44,6 +44,9 @@ CREATE TABLE "roomaccess" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "user_email_key" ON "user"("email");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "roles_userid_key" ON "roles"("userid");
 
 -- AddForeignKey

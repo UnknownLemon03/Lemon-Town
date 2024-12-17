@@ -1,4 +1,4 @@
-import { z} from 'zod'
+import { string, z} from 'zod'
 
 export const RoomType = z.object({
     name:z.string(),
@@ -14,3 +14,13 @@ export const RoomTypeDB = z.object({
     url:z.string()
 }) 
 
+export const UserTypeDB = z.object({
+    id:z.number(),
+    name:z.string(),
+    email:z.string(),
+    password : z.string(),
+})
+
+export type RoomType = z.infer<typeof RoomType>
+export type RoomTypeDB = z.infer<typeof RoomTypeDB>
+export type UserTypeDB = z.infer<typeof UserTypeDB>
