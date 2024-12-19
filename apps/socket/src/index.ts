@@ -2,7 +2,7 @@ console.clear();
 import { Server, Socket } from "socket.io";
 import http from 'http';
 import {  GetRoomDB } from "./database/db";
-
+import jwt from "jsonwebtoken"
 const server = http.createServer();
 const io = new Server(server, {
     cors: {
@@ -13,6 +13,18 @@ const io = new Server(server, {
 
 io.on('connection', (socket: Socket) => {
     // this event gives coordinate to other player 
+    socket.timeout(5000).emit("AUTH",{Data:"something"} ,(err: Error | null, response: any) => {
+        if (err) {
+            console.log("timeout exiceed")
+            socket.disconnect();
+        } else {
+            if(!response && !response?.Auth)
+                return socket.disconnect();
+            
+                // const authdata = jwt.verify(response.Auth,process.env.JWT_SECRETE as string);
+                // console.log("Auth data",authdata)
+        }
+    });
     socket.on("UpdatePlayerLocation",(data:{roomName:string,userData:{x:number,y:number} })=>{
         // send to every other player except sender 
         socket.broadcast.to(data.roomName).emit("UserNewLocation",{id:socket.id,x:data.userData.x,y:data.userData.y})
@@ -20,8 +32,12 @@ io.on('connection', (socket: Socket) => {
         socket.data.location = {x:data.userData.x,y:data.userData.y}
     })
 
-    socket.on('joinRoom', (data: { roomName: string, userData: {x:number,y:number} }) => {
-        console.log("somebody is joining ",socket.id)
+    socket.on('joinRoom', (data: { roomName: string, userData: {x:number,y:number , Auth:string} }) => {
+        if(!data.userData.Auth){
+            console.log("user disconncected no auth join room")
+            return socket.disconnect();
+        }
+        // const authdata = jwt.verify(data.userData.Auth,process.env.JWT_SECRETE as string);
         const { roomName, userData } = data;
         socket.join(roomName);
         const newUserId = socket.id;
@@ -57,15 +73,7 @@ io.on('connection', (socket: Socket) => {
         io.emit("RoomRemoveResponse",{id})
     });
 });
-async function getRoom(){
-    setTimeout(async()=>{
-        GetRoomDB().then((e=>{
-            console.log(e.data)
-        }))
-        getRoom();
-    },2000)
-}
-getRoom();
+
 server.listen(3000, () => {
     console.log('Server running on port 3000');
 });

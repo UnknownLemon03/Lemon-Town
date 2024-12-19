@@ -2,10 +2,12 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Game } from 'phaser'; // Correct import for Phaser modules
 import { Town } from './Town'; // Assuming this is your custom scene
-import { MainPlayer } from './MainPlayer';
+import { ConnectSoket, getSocket } from './Socket';
+import { cookies } from 'next/headers';
 export const dynamic = 'no-catch'
 export default function PhasorTown({mapurl,player}:{mapurl:string,player?:number}) {
     const ref = useRef<HTMLDivElement>(null);
+    const[loading,setLoading] = useState(true);
     let [game, setGame] = useState<Game | null>(null);
     useLayoutEffect(() => {
         if (!ref.current) return;
@@ -35,12 +37,18 @@ export default function PhasorTown({mapurl,player}:{mapurl:string,player?:number
         Town.PlayerIconId = Math.ceil(Math.random() * 4)
         Town.startX = 35;
         Town.startY = 27;
-        const game = new Game({...config, parent: ref.current});
-        setGame(game)
-        return () => {
-            game.destroy(true);
-        };
-    }, []); 
+        if(!loading){
+            const game = new Game({...config, parent: ref.current});
+            setGame(game)
+            return () => {
+                    game.destroy(true);
+            };
+        }else{
+            ConnectSoket(Town.startX*32,Town.startY*32,"room1","tset").then(e=>{
+                setLoading(false);
+            })
+        }
+    }, [loading]); 
 
     return (
         <>

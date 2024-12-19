@@ -138,7 +138,6 @@ export class Town extends Scene
        // sub group for side players 
        this.subPlayerGroup = this.add.group();
        // socket connection 
-       ConnectSoket(Town.startX*32,Town.startY*32,"room1");
         const io = getSocket();
         io.on('GetExistingPlayer', (data) => {
             const {userData:{ExistingPlayers},id} = data;
