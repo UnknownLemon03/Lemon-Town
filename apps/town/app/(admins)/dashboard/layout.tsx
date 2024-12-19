@@ -1,3 +1,5 @@
+import { LogOut } from "@/backend/Auth";
+import NavPath from "@/components/NavPath";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -10,9 +12,9 @@ export default function RootLayout({
 }>) {
     const links = [
         {name:"Manage Rooms",icon:"/rooms.png",path:"/dashboard/rooms"},
-        {name:"Manage Rooms roomadmin",icon:"/rooms.png",path:"/dashboard/rooms2"},
+        {name:"Manage Rooms Users",icon:"/rooms.png",path:"/dashboard/manage"},
         {name:"Accounts",icon:"/user.png",path:"/dashboard/users"},
-        {name:"Logout",icon:"/logout.png",path:"/dashboard/logout"},
+        {name:"Maps",icon:"/map.png",path:"/dashboard/maps"},
     ]
   return (
    
@@ -47,11 +49,24 @@ export default function RootLayout({
                         </Link>
                     </li>
                 ))}
+                <li  >  
+                    <button onClick={LogOut}  className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                    <Image
+                        src={"/logout.png"}
+                        alt={"Logout"}
+                        width={50}  
+                        height={50} 
+                        className="transition duration-75 group-hover:text-gray-900 dark:group-hover:text-white"
+                    />
+                        <span className="ms-3">Logout</span>
+                    </button>
+                </li>
             </ul>
         </div>
         </aside>
 
         <div className="p-2 sm:ml-64">
+        <NavPath/>
         <div className="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
             {children}
         </div>

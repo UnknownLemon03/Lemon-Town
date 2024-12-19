@@ -7,8 +7,7 @@ export default async function page() {
     const req = await GetRoomDB();
   return (
     <>
-        <h4 className="text-2xl font-bold dark:text-white mb-5">Create Room</h4>
-        <AddNewRoom/>
+        <h4 className="text-2xl font-bold dark:text-white mb-5">Manage Room </h4>
         <div className="overflow-x-auto shadow-md sm:rounded-lg ">
             <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                 <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -25,7 +24,7 @@ export default async function page() {
                     </tr>
                 </thead>
                 <tbody>
-                   <RoomRow data={req.data}/>
+                   <RoomRow data={req.data} />
                 </tbody>
             </table>
         </div>

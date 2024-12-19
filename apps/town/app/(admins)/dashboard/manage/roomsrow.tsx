@@ -29,16 +29,12 @@ export default function RoomRow({data}:{data:RoomType[]}) {
             {e.name}
         </th>
         <td className="px-6 py-4">
-            {e.start}
-        </td>
-        <td className="px-6 py-4">
-            {e.end}
-        </td>
-        <td className="px-6 py-4">
-            <Link href="/admin/edit" className="font-medium text-blue-600 dark:text-blue-500 hover:underline mx-2">Edit</Link>
-            <Link href="#" onClick={()=>handleDelete(e.id)} className="font-medium text-red-600 dark:text-red-500 hover:underline mx-2">Delete</Link>
+            <Link href={`/dashboard/manage/${e.id}`}  className="font-medium text-red-600 dark:text-red-500 hover:underline mx-2">Manage</Link>
         </td>
     </tr>)}
+    {data.length == 0 &&<tr><td scope="row" colSpan={5} className="px-6 text-center py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+            No Room Found
+        </td></tr>}
     </>
   )
 }

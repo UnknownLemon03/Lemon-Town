@@ -1,29 +1,31 @@
 import React from 'react'
 import Link from "next/link";
 import AddNewRoom from '@/components/AddNewRoom';
-import { DeleteRoomDB, GetRoomDB } from '@/backend/database';
-import RoomRow from './roomsrow';
+import { GetAllMap } from '@/backend/database';
+import MapRow from './maprow';
+import AddMap from '@/components/AddMap';
+
 export default async function page() {
-    const req = await GetRoomDB();
+    const req = await GetAllMap({});
   return (
     <>
-        <h4 className="text-2xl font-bold dark:text-white mb-5">Heading 4</h4>
-        <AddNewRoom/>
+        <h4 className="text-2xl font-bold dark:text-white mb-5">Managet Maps</h4>
+        <AddMap/>
         <div className="overflow-x-auto shadow-md sm:rounded-lg ">
             <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                 <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
                         <th scope="col" className="px-6 py-3">
-                            Room ID 
+                            Map ID 
                         </th>
                         <th scope="col" className="px-6 py-3">
-                            Room Name
+                            Map Name
                         </th>
                         <th scope="col" className="px-6 py-3">
-                            Room Start tile
+                            Start tile
                         </th>
                         <th scope="col" className="px-6 py-3">
-                            Room End tile
+                            End tile
                         </th>
                         <th scope="col" className="px-6 py-3">
                             Action
@@ -31,7 +33,7 @@ export default async function page() {
                     </tr>
                 </thead>
                 <tbody>
-                   <RoomRow data={req.data}/>
+                   <MapRow data={req.data} />
                 </tbody>
             </table>
         </div>

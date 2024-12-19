@@ -22,3 +22,9 @@ export async function GetJWTSession(){
     }
     return {data:null,error:true};
 }
+
+export async function LogOut(){
+    'use client'
+    const cookieStore = await cookies();
+    cookieStore.delete("AUTH");
+}

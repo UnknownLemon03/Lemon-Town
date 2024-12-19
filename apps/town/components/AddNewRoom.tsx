@@ -1,12 +1,30 @@
 'use client'
+import { GetAllMap } from '@/backend/database'
 import { AddRoomServerAction } from '@/backend/serverAction'
-import React, { useActionState, useEffect, useState } from 'react'
+import React, { useActionState, useEffect, useMemo, useState } from 'react'
 import { useFormState } from 'react-dom'
 
 export default function AddNewRoom() {
   const Rooms = ["/map"]
+  const [maps,setMaps] = useState<{[key:string]:number}>({})
   const [hide,setHide] = useState<Boolean>(false)
   const [preState,formAction , isPending] = useActionState(AddRoomServerAction,{error:"",success:false})
+  async function getMaps(){
+    const {data,success} = await GetAllMap({})
+    if(success){
+      let maps:{[key:string]:number} = {}
+      data.forEach(e=>{
+        maps[e.name] = e.id
+      })
+      setMaps(maps)
+    }
+  }
+  useEffect(()=>{
+    getMaps();
+    console.log(maps
+
+    )
+  },[])
   useEffect(()=>{
     if(preState && preState.success){
       setHide(false);
@@ -28,24 +46,15 @@ export default function AddNewRoom() {
                   Room Name
                 </label>
               </div>
+              
               <div className="relative z-0 w-full mb-5 group">
-                <input defaultValue={-1} type="number" name="start" id="start" className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
-                <label htmlFor="start" className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
-                  Start tile no
-                </label>
-              </div>
-              <div className="relative z-0 w-full mb-5 group">
-                <input defaultValue={-1} type="number" name="end" id="end" className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
-                <label htmlFor="end" className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
-                  End tile no
-                </label>
-              </div>
-              <div className="relative z-0 w-full mb-5 group">
-                  <label htmlFor="genres" className="block mb-2 text-gray-500 text-sm font-medium  dark:text-white">Genres</label>
-                    <select id="genres" required name='url'  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                  <label htmlFor="mapid" className="block mb-2 text-gray-500 text-sm font-medium  dark:text-white">
+                    Map
+                  </label>
+                    <select id="mapid"  name="mapid" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                       <option  disabled={true} defaultChecked={true} hidden={true}>Choose a Room</option>
-                      {Rooms.map((e,i)=><option key={i} value={e}>{e}</option>)}
-                      {Rooms.length == 0 && <option disabled={true}>No map added</option>}
+                      {Object.keys(maps).map((e,i)=><option key={i} value={maps[e]}>{e}</option>)}
+                      {Object.keys(maps).length == 0 && <option disabled={true}>No map added</option>}
                   </select>
               </div>
               <div className='flex justify-evenly'>

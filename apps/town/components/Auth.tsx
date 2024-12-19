@@ -2,13 +2,23 @@
 import { SignInServerAction, SignUpServerAction } from '@/backend/serverAction';
 import { error } from 'console';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import React, {startTransition, useActionState, useEffect, useState } from "react";
+import toast from 'react-hot-toast';
 export const dynamic = "no-catch"
 export default function AuthForm({mode}:{mode:boolean}) {
   const [isLogin, setIsLogin] = useState(mode);
   const [preStateUp,ActionSignup] = useActionState(SignUpServerAction,{success:false,error:"",data:null});
   const [preStateIn,ActionSignin] = useActionState(SignInServerAction,{success:false,error:"",data:null});
-
+  useEffect(()=>{
+    if(preStateIn.success){
+      toast.success(`Login Successfull ${preStateIn.data?.name}`)
+      redirect("/dashboard")
+    }else if(preStateUp.success){
+      toast.success(`Account created Successfully ${preStateIn.data?.name}`)
+      redirect("/dashboard")
+    }
+  })
   function handleSignUp(e:React.FormEvent<HTMLFormElement>){
     e.preventDefault();
     const form = e.currentTarget;
