@@ -4,6 +4,7 @@ import { Game } from 'phaser'; // Correct import for Phaser modules
 import { Town } from './Town'; // Assuming this is your custom scene
 import { ConnectSoket, getSocket } from './Socket';
 import { cookies } from 'next/headers';
+import { MainPlayer } from './MainPlayer';
 export const dynamic = 'no-catch'
 export default function PhasorTown({mapurl,player}:{mapurl:string,player?:number}) {
     const ref = useRef<HTMLDivElement>(null);
@@ -33,8 +34,14 @@ export default function PhasorTown({mapurl,player}:{mapurl:string,player?:number
             antialias: false,
         };
 
+        //temp 
+        const  names = ["lemon","apple","orange","cherry"]
+
         Town.MapLink = mapurl
-        Town.PlayerIconId = Math.ceil(Math.random() * 4)
+        MainPlayer.PlayerIconId = Math.ceil(Math.random() * 4)
+        MainPlayer.RoomID = 1
+        MainPlayer.Auth = "test"
+        MainPlayer.Name = names[Math.floor(Math.random()*4)]
         Town.startX = 35;
         Town.startY = 27;
         if(!loading){
@@ -44,7 +51,7 @@ export default function PhasorTown({mapurl,player}:{mapurl:string,player?:number
                     game.destroy(true);
             };
         }else{
-            ConnectSoket(Town.startX*32,Town.startY*32,"room1","tset").then(e=>{
+            ConnectSoket(Town.startX*32,Town.startY*32,MainPlayer.RoomID,{PlayerIconId:MainPlayer.PlayerIconId,Auth:"tset",name:MainPlayer.Name}).then(e=>{
                 setLoading(false);
             })
         }

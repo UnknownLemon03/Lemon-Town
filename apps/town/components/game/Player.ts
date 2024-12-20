@@ -3,9 +3,12 @@ import Phaser from 'phaser';
 export class Player extends Phaser.Physics.Arcade.Sprite {
     lastDirection:string
     speed:number
-    constructor(scene:Phaser.Scene , x:number, y:number) {
-        super(scene, x, y, 'stop', 1); // 'stop' is the texture, 1 is the frame
-        
+    PlayerIconId:number
+    constructor(scene:Phaser.Scene , x:number, y:number,PlayerIconId:number) {
+        super(scene, x, y, `stop_${PlayerIconId}`, 1); // 'stop' is the texture, 1 is the frame
+        if(!PlayerIconId)
+            PlayerIconId = 1;    
+        this.PlayerIconId = PlayerIconId;
         // Add the player to the scene
         scene.add.existing(this);
         // Enable physics for the player
@@ -19,8 +22,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         
         // Player movement properties
         this.speed = 100;  // Default movement speed
-        this.lastDirection = 'stop_down';  // Keep track of the last movement direction for stop animation
-        this.play("stop_down")   
+        this.lastDirection = `stop_down_${this.PlayerIconId}`;  // Keep track of the last movement direction for stop animation
+        this.play(`stop_down_${this.PlayerIconId}`)   
     }
 }
 

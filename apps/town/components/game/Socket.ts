@@ -7,7 +7,7 @@ import { resolve } from "path";
 
 
 let socket:Socket;
-export async function ConnectSoket(x:number,y:number,room:string,Auth:string){
+export async function ConnectSoket(x:number,y:number,room:number,{PlayerIconId,Auth,name}:{PlayerIconId:number,Auth:string,name:string}){
     return new Promise((res,rej)=>{
         socket = io(process.env.NEXT_PUBLIC_SOCKET_URL);
         // Join a room
@@ -15,10 +15,9 @@ export async function ConnectSoket(x:number,y:number,room:string,Auth:string){
         socket.on('connect',()=>{
 
         })
-        socket.on("AUTH",(data,callback)=>{
-            const userData = { x , y , Auth};
+        socket.on("AUTH",(callback)=>{
+            const userData = { x , y , Auth,PlayerIconId,name};
             callback({Auth})
-            socket.emit('joinRoom', { roomName, userData });
             res(socket);
         })
         socket.on('connect_error', (err) => {
@@ -28,12 +27,12 @@ export async function ConnectSoket(x:number,y:number,room:string,Auth:string){
             toast.error("You are disconnected from server")
             redirect("/dashboard")
         })
-        return socket;
     })
 }   
 
 
 export function getSocket(){
+    // console.log("get socket",socket)
     return socket;
 }
 

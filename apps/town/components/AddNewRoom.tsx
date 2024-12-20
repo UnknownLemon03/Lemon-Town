@@ -49,10 +49,9 @@ export default function AddNewRoom() {
               
               <div className="relative z-0 w-full mb-5 group">
                   <label htmlFor="mapid" className="block mb-2 text-gray-500 text-sm font-medium  dark:text-white">
-                    Map
+                    Choose Map
                   </label>
-                    <select id="mapid"  name="mapid" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                      <option  disabled={true} defaultChecked={true} hidden={true}>Choose a Room</option>
+                    <select id="mapid" name="mapid" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                       {Object.keys(maps).map((e,i)=><option key={i} value={maps[e]}>{e}</option>)}
                       {Object.keys(maps).length == 0 && <option disabled={true}>No map added</option>}
                   </select>

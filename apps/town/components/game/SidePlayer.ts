@@ -2,6 +2,7 @@ import { Scene } from "phaser";
 import { MainPlayer } from "./MainPlayer";
 import { Player } from "./Player";
 import { getSocket } from "./Socket";
+import { number } from "zod";
 
 
 export class SidePlayer extends Player {
@@ -11,13 +12,12 @@ export class SidePlayer extends Player {
     movementStack:{x:number,y:number}[] = [];
     playerName:string;
     nameText: Phaser.GameObjects.Text;
-    constructor(scene:Scene, x:number, y:number,socketID:string) {
-        super(scene, x, y);
+    constructor(scene:Scene, x:number, y:number,socketID:string,PlayerIconId:number,name:string) {
+        super(scene, x, y,PlayerIconId);
         this.currX = x;  
         this.currY = y;   
         this.socketID = socketID
-        this.playerName = "Apple"
-
+        this.playerName = name
         this.nameText = scene.add.text(x, y - 30, this.playerName, {
             font: '18px nunito',
             fontSize:"2px",
@@ -35,9 +35,8 @@ export class SidePlayer extends Player {
         this.nameText.destroy(true);
         this.destroy(true);
     }
-    update() {
-        this.moveTo(this.currX, this.currY);
-        console.log(this.movementStack)
+    update(playerIconid:number) {
+        this.moveTo(this.currX, this.currY,playerIconid);
         if (this.movementStack.length > 0) {
             this.currX = this.movementStack[0].x;
             this.currY = this.movementStack[0].y;
@@ -56,23 +55,22 @@ export class SidePlayer extends Player {
     changePos(x:number, y:number) {
         this.movementStack.push({x,y})
     }
-    moveTo(x:number, y:number) {
+    moveTo(x:number, y:number,playerIconid:number) {
  
         const directionX = x - this.x;
         const directionY = y - this.y;
         if (Math.sqrt(Math.pow(this.x - this.currX, 2) + Math.pow(this.y - this.currY, 2))<3) {
-            console.log('before error this ',this)
             this.setVelocity(0, 0);
 
             // Play stop animation based on the last direction of movement
             if (this.lastDirection === 'right') {
-                this.anims.play("stop_right", true);
+                this.anims.play(`stop_right_${playerIconid}`, true);
             } else if (this.lastDirection === 'left') {
-                this.anims.play("stop_left", true);
+                this.anims.play(`stop_left_${playerIconid}`, true);
             } else if (this.lastDirection === 'down') {
-                this.anims.play("stop_down", true);
+                this.anims.play(`stop_down_${playerIconid}`, true);
             } else if (this.lastDirection === 'up') {
-                this.anims.play("stop_up", true);
+                this.anims.play(`stop_up_${playerIconid}`, true);
             }
             return;
         } else {
@@ -88,18 +86,18 @@ export class SidePlayer extends Player {
             // Choose the correct animation based on the direction
             if (Math.abs(normalizedDirectionX) > Math.abs(normalizedDirectionY)) {
                 if (normalizedDirectionX > 0) {
-                    this.anims.play("move_right", true);
+                    this.anims.play(`move_right_${this.PlayerIconId}`, true);
                     this.lastDirection = 'right';
                 } else {
-                    this.anims.play("move_left", true);
+                    this.anims.play(`move_left_${this.PlayerIconId}`, true);
                     this.lastDirection = 'left';
                 }
             } else {
                 if (normalizedDirectionY > 0) {
-                    this.anims.play("move_down", true);
+                    this.anims.play(`move_down_${this.PlayerIconId}`, true);
                     this.lastDirection = 'down';
                 } else {
-                    this.anims.play("move_up", true);
+                    this.anims.play(`move_up_${this.PlayerIconId}`, true);
                     this.lastDirection = 'up';
                 }
             }
@@ -113,33 +111,36 @@ export class SidePlayer extends Player {
 export class AllSidePlayers {
     static Players:Partial<{[key:string]:SidePlayer}> = {}
 
-
-    static AddPlayer(sence:any,id:string,loc:{x:number,y:number}){
-        const player = new SidePlayer(sence,loc.x,loc.y,id);
+    static AddPlayer(sence:any,id:string,loc:{x:number,y:number,PlayerIconId:number,name:string}){
+        const player = new SidePlayer(sence,loc.x,loc.y,id,loc.PlayerIconId,loc.name);
         AllSidePlayers.Players[id] = player;
         sence.subPlayerGroup.add(AllSidePlayers.Players[id])
+        console.clear();    
+        console.log("side player paded ",loc.name)
     }
     static UpdatePlayer(sence:Scene,socketId:string,data:{x:number,y:number}){
         try{
             const player = AllSidePlayers.Players[socketId]
-            console.log(player)
             player!.changePos(data.x,data.y)
         }catch(e){
             console.log(e)
         }
     }
-    static CreatePlayers(sence:Scene,data:{id:string,x:number,y:number}[]){
+    static CreatePlayers(sence:Scene,data:{id:string,x:number,y:number,PlayerIconId:number,name:string}[]){
         console.log("add exiting player in new player")
         data.forEach((e)=>{
-            AllSidePlayers.AddPlayer(sence,e.id,{x:e.x,y:e.y})
+            AllSidePlayers.AddPlayer(sence,e.id,{x:e.x,y:e.y,PlayerIconId:e.PlayerIconId,name:e.name})
         })
         console.log("create player",AllSidePlayers.Players)
     }
     static RemovePlayer(scene:Scene,id:string){
+        console.log(id,AllSidePlayers.Players)
         const player = AllSidePlayers.Players[id]!;
-        player.delete();
-        delete  AllSidePlayers.Players[id]
-        console.log(AllSidePlayers.Players[id])
+        if(player){
+            console.log(player)
+            player.delete();
+            delete  AllSidePlayers.Players[id]
+        }
     }
 
 }

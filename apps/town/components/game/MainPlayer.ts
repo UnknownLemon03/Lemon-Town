@@ -7,7 +7,10 @@ import { AllSidePlayers } from './SidePlayer';
 
 export class MainPlayer extends Player {
     static NearPlayer: { [id: string]: boolean } = {}; // Using a record type for static player tracking
-    
+    static PlayerIconId:number =1;
+    static RoomID:number
+    static Name:string = "lemon"
+    static Auth:string
     //@ts-expect-error
     cursorKeys: Phaser.Input.Keyboard.CursorKey;
     playerSpeed: number;
@@ -17,8 +20,8 @@ export class MainPlayer extends Player {
     playerName:string;
     nameText: Phaser.GameObjects.Text;
     constructor(scene: Phaser.Scene, x: number, y: number) {
-        super(scene, x, y);
-        this.playerName = "Lemon"
+        super(scene, x, y,MainPlayer.PlayerIconId);
+        this.playerName = MainPlayer.Name
         // Set camera bounds and start camera follow
         //@ts-expect-error
         const mapWidth: number = scene.map.widthInPixels;
@@ -72,9 +75,10 @@ export class MainPlayer extends Player {
         if (xn > 20 || yn > 20) {
             const io = getSocket();
             if(Object.keys(AllSidePlayers.Players).length > 0)
-            io.emit('UpdatePlayerLocation', { roomName: 'room1', userData: { x: Math.floor(this.x), y: Math.floor(this.y) } });
+                io.emit('UpdatePlayerLocation', { roomName: MainPlayer.RoomID, userData: { x: Math.floor(this.x), y: Math.floor(this.y) } });
             this.oldx = this.x;
             this.oldy = this.y;
+            console.log("Updaing main player",AllSidePlayers.Players)
         }
     }
 
@@ -87,39 +91,39 @@ export class MainPlayer extends Player {
             this.playerSpeed = 100;  // Default speed when Shift is not pressed
         }
         if (this.cursorKeys.up.isDown && this.cursorKeys.left.isDown) {
-            this.anims.play("move_up", true); // Diagonal animation for moving up-left
+            this.anims.play(`move_up_${this.PlayerIconId}`, true); // Diagonal animation for moving up-left
             this.setVelocity(-this.playerSpeed, -this.playerSpeed); // Diagonal movement
             this.movement = "move_up";
         } else if (this.cursorKeys.up.isDown && this.cursorKeys.right.isDown) {
-            this.anims.play("move_up", true); // Diagonal animation for moving up-right
+            this.anims.play(`move_up_${this.PlayerIconId}`, true); // Diagonal animation for moving up-right
             this.setVelocity(this.playerSpeed, -this.playerSpeed); // Diagonal movement
             this.movement = "move_up";
         } else if (this.cursorKeys.down.isDown && this.cursorKeys.left.isDown) {
-            this.anims.play("move_down", true); // Diagonal animation for moving down-left
+            this.anims.play(`move_down_${this.PlayerIconId}`, true); // Diagonal animation for moving down-left
             this.setVelocity(-this.playerSpeed, this.playerSpeed); // Diagonal movement
             this.movement = "move_down";
         } else if (this.cursorKeys.down.isDown && this.cursorKeys.right.isDown) {
-            this.anims.play("move_down", true); // Diagonal animation for moving down-right
+            this.anims.play(`move_down_${this.PlayerIconId}`, true); // Diagonal animation for moving down-right
             this.setVelocity(this.playerSpeed, this.playerSpeed); // Diagonal movement
             this.movement = "move_down";
         }
         // Vertical movement (up and down)
         else if (this.cursorKeys.up.isDown) {
-            this.anims.play("move_up", true);
+            this.anims.play(`move_up_${this.PlayerIconId}`, true);
             this.setVelocity(0, -this.playerSpeed); // Only vertical movement
             this.movement = "move_up";
         } else if (this.cursorKeys.down.isDown) {
-            this.anims.play("move_down", true);
+            this.anims.play(`move_down_${this.PlayerIconId}`, true);
             this.setVelocity(0, this.playerSpeed); // Only vertical movement
             this.movement = "move_down";
         }
         // Horizontal movement (left and right)
         else if (this.cursorKeys.left.isDown) {
-            this.anims.play("move_left", true);
+            this.anims.play(`move_left_${this.PlayerIconId}`, true);
             this.setVelocity(-this.playerSpeed, 0); // Only horizontal movement
             this.movement = "move_left";
         } else if (this.cursorKeys.right.isDown) {
-            this.anims.play("move_right", true);
+            this.anims.play(`move_right_${this.PlayerIconId}`, true);
             this.setVelocity(this.playerSpeed, 0); // Only horizontal movement
             this.movement = "move_right";
         }
@@ -128,16 +132,16 @@ export class MainPlayer extends Player {
             this.setVelocity(0, 0);
             switch (this.movement) {
                 case "move_up":
-                    this.anims.play("stop_up", true);
+                    this.anims.play(`stop_up_${this.PlayerIconId}`, true);
                     break;
                 case "move_down":
-                    this.anims.play("stop_down", true);
+                    this.anims.play(`stop_down_${this.PlayerIconId}`, true);
                     break;
                 case "move_left":
-                    this.anims.play("stop_left", true);
+                    this.anims.play(`stop_left_${this.PlayerIconId}`, true);
                     break;
                 case "move_right":
-                    this.anims.play("stop_right", true);
+                    this.anims.play(`stop_right_${this.PlayerIconId}`, true);
                     break;
             }
         }

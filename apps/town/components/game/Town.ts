@@ -7,13 +7,13 @@ import { AllSidePlayers, SidePlayer } from './SidePlayer';
 
 export class Town extends Scene
 {
+    static TownPlayerCharatersCount = 4;
     map:any;
     groundLayer1:Phaser.Tilemaps.TilemapLayer|null;
     groundLayer2:Phaser.Tilemaps.TilemapLayer|null;
     groundLayer3:Phaser.Tilemaps.TilemapLayer|null;
     static MapLink:string
     mainPlayer:Physics.Arcade.Sprite | undefined 
-    static PlayerIconId:number =1;
     static startX:number;
     static startY:number;
     subPlayerGroup:any;
@@ -31,94 +31,96 @@ export class Town extends Scene
         this.load.image('Interiors', '/town/Interiors.png');
 
 
-        
-        this.load.spritesheet("player",`/town/player${Town.PlayerIconId}.png`,{
-            frameWidth:16,
-            frameHeight:32,
-            margin: 0, 
-            spacing: 0, 
-        });
-       
-        this.load.spritesheet("movement", `/town/player${Town.PlayerIconId}.png`, {
-            frameWidth: 16,
-            frameHeight: 32,
-            margin: 0,
-            spacing: 0, 
-            startFrame:48,
-            endFrame:71
-        });
-        this.load.spritesheet("stop", `/town/player${Town.PlayerIconId}.png`, {
-            frameWidth: 16,
-            frameHeight: 32,
-            margin: 0, 
-            spacing: 0, 
-            startFrame:24,
-            endFrame:47
-        });
+        for(let i = 1; i <= Town.TownPlayerCharatersCount; i++){
+            this.load.spritesheet(`player_${i}`,`/town/player${i}.png`,{
+                frameWidth:16,
+                frameHeight:32,
+                margin: 0, 
+                spacing: 0, 
+            });
+            
+            this.load.spritesheet(`movement_${i}`, `/town/player${i}.png`, {
+                frameWidth: 16,
+                frameHeight: 32,
+                margin: 0,
+                spacing: 0, 
+                startFrame:48,
+                endFrame:71
+            });
+            this.load.spritesheet(`stop_${i}`, `/town/player${i}.png`, {
+                frameWidth: 16,
+                frameHeight: 32,
+                margin: 0, 
+                spacing: 0, 
+                startFrame:24,
+                endFrame:47
+            });
+        }
     }
 
     create ()
     {   
        // animation for player 
        const moveSpeed = 10;
-       this.anims.create({
-           key: "move_right",
-           frames: this.anims.generateFrameNumbers("movement", { start: 0, end: 5 }),  // Frames for 'move_up'
-           frameRate: moveSpeed,
-           repeat: -1,
-       });
+       for(let i = 1; i <= Town.TownPlayerCharatersCount ; i++){
+            this.anims.create({
+                key: `move_right_${i}`,
+                frames: this.anims.generateFrameNumbers(`movement_${i}`, { start: 0, end: 5 }),  // Frames for 'move_up'
+                frameRate: moveSpeed,
+                repeat: -1,
+            });
 
-       this.anims.create({
-           key: "move_up",
-           frames: this.anims.generateFrameNumbers("movement", { start: 6, end: 11 }),  // Frames for 'move_down'
-           frameRate: moveSpeed,
-           repeat: -1,
-       });
+            this.anims.create({
+                key: `move_up_${i}`,
+                frames: this.anims.generateFrameNumbers(`movement_${i}`, { start: 6, end: 11 }),  // Frames for 'move_down'
+                frameRate: moveSpeed,
+                repeat: -1,
+            });
 
-       this.anims.create({
-           key: "move_left",
-           frames: this.anims.generateFrameNumbers("movement", { start: 12, end: 17 }),  // Frames for 'move_left'
-           frameRate: moveSpeed,
-           repeat: -1,
-       });
+            this.anims.create({
+                key: `move_left_${i}`,
+                frames: this.anims.generateFrameNumbers(`movement_${i}`, { start: 12, end: 17 }),  // Frames for 'move_left'
+                frameRate: moveSpeed,
+                repeat: -1,
+            });
 
-       this.anims.create({
-           key: "move_down",
-           frames: this.anims.generateFrameNumbers("movement", { start: 18, end: 23 }),  // Frames for 'move_right'
-           frameRate: moveSpeed,
-           repeat: -1,
-       });
+            this.anims.create({
+                key: `move_down_${i}`,
+                frames: this.anims.generateFrameNumbers(`movement_${i}`, { start: 18, end: 23 }),  // Frames for 'move_right'
+                frameRate: moveSpeed,
+                repeat: -1,
+            });
 
-       //
-       const stopSpeed = 9;
-       this.anims.create({
-           key: "stop_right",
-           frames: this.anims.generateFrameNumbers("stop", { start: 0, end: 5 }),  // Frames for 'move_up'
-           frameRate: stopSpeed,
-           repeat: -1,
-       });
+            //
+            const stopSpeed = 9;
+            this.anims.create({
+                key: `stop_right_${i}`,
+                frames: this.anims.generateFrameNumbers(`stop_${i}`, { start: 0, end: 5 }),  // Frames for 'move_up'
+                frameRate: stopSpeed,
+                repeat: -1,
+            });
 
-       this.anims.create({
-           key: "stop_up",
-           frames: this.anims.generateFrameNumbers("stop", { start: 6, end: 11 }),  // Frames for 'move_down'
-           frameRate: stopSpeed,
-           repeat: -1,
-       });
+            this.anims.create({
+                key: `stop_up_${i}`,
+                frames: this.anims.generateFrameNumbers(`stop_${i}`, { start: 6, end: 11 }),  // Frames for 'move_down'
+                frameRate: stopSpeed,
+                repeat: -1,
+            });
 
-       this.anims.create({
-           key: "stop_left",
-           frames: this.anims.generateFrameNumbers("stop", { start: 12, end: 17 }),  // Frames for 'move_left'
-           frameRate: stopSpeed,
-           repeat: -1,
-       });
+            this.anims.create({
+                key: `stop_left_${i}`,
+                frames: this.anims.generateFrameNumbers(`stop_${i}`, { start: 12, end: 17 }),  // Frames for 'move_left'
+                frameRate: stopSpeed,
+                repeat: -1,
+            });
 
-       this.anims.create({
-           key: "stop_down",
-           frames: this.anims.generateFrameNumbers("stop", { start: 18, end: 23 }),  // Frames for 'move_right'
-           frameRate: stopSpeed,
-           repeat: -1,
-       });
-
+            this.anims.create({
+                key: `stop_down_${i}`,
+                frames: this.anims.generateFrameNumbers(`stop_${i}`, { start: 18, end: 23 }),  // Frames for 'move_right'
+                frameRate: stopSpeed,
+                repeat: -1,
+            });
+        }
        this.map = this.make.tilemap({ key: 'map' , width:40, height:30 });
        const tileset1 = this.map.addTilesetImage('Room_Builder', "Room_Builder");
        const tileset2 = this.map.addTilesetImage('Interiors', 'Interiors');
@@ -139,32 +141,41 @@ export class Town extends Scene
        this.subPlayerGroup = this.add.group();
        // socket connection 
         const io = getSocket();
+        console.log("SOCKET SETUP DONE")
         io.on('GetExistingPlayer', (data) => {
             const {userData:{ExistingPlayers},id} = data;
+            console.log("GetExistingPlayer",data)
             AllSidePlayers.CreatePlayers(this,ExistingPlayers)
         });
         io.on('NewPlayer', (data) => {
-            const {id,x,y} = data;
-            // // @ts-expect-error
-            AllSidePlayers.AddPlayer(this,id,{x,y});
+            const {id,x,y,PlayerIconId,name} = data;
+            console.log("new player",data)
+            AllSidePlayers.AddPlayer(this,id,{x,y,PlayerIconId,name});
         });
         io.on("UserNewLocation",(data)=>{
             AllSidePlayers.UpdatePlayer(this,data.id,{x:data.x,y:data.y})
+            console.log(data,"UserNewLocation")
         })
         io.on("RoomRemoveResponse",({id})=>{
             console.log('remove user fire')
             console.log(id)
             AllSidePlayers.RemovePlayer(this,id)
         })
-
+        io.emit('joinRoom', { 
+            roomName:MainPlayer.RoomID, 
+            userData:{ x:this.mainPlayer.x , 
+            y:this.mainPlayer.y , 
+            Auth:MainPlayer.Auth,
+            PlayerIconId:MainPlayer.PlayerIconId,
+            name:MainPlayer.Name
+        } });
     }
    
     update(time: number, delta: number): void {
         this.mainPlayer!.update();
         for(let i = 0 ; i < this.subPlayerGroup.getChildren().length;i++){
             const player:SidePlayer = this.subPlayerGroup.getChildren()[i]
-            player.update();
-            console.log("palyer curr",player)
+            player.update(player.PlayerIconId);
             if(Math.abs(this.mainPlayer!.x - player.x) < 50 && Math.abs(this.mainPlayer!.y-player.y) < 50)
                 MainPlayer.AddPlayer(player.socketID);
             else
