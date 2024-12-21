@@ -13,6 +13,7 @@ export default function RootLayout({
     const links = [
         {name:"Manage Rooms",icon:"/rooms.png",path:"/dashboard/rooms"},
         {name:"Manage Rooms Users",icon:"/roomusers.png",path:"/dashboard/manage"},
+        {name:"Admins",icon:"/user.png",path:"/dashboard/admins"},
         {name:"Accounts",icon:"/user.png",path:"/dashboard/users"},
         {name:"Maps",icon:"/map.png",path:"/dashboard/maps"},
         {name:"Towns",icon:"/town.png",path:"/dashboard/towns"},

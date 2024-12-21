@@ -4,6 +4,7 @@ import { MapTypeDB, RoomType, RoomTypeDB, UserTypeDB } from "./datatype";
 import { PrismaClient } from '@prisma/client';
 import { revalidatePath } from "next/cache";
 import bcrypt from "bcrypt"
+import { trackSynchronousRequestDataAccessInDev } from "next/dist/server/app-render/dynamic-rendering";
 const prisma  = new PrismaClient();
 
 
@@ -401,6 +402,81 @@ export async function UpdateUser({name,id}:{name:string,id:number}):Promise<{err
             return {error:`${e.name}-${e.message}`,success:false,data:null}
         }
         return {error:"Error Seraching User",success:false,data:null}
+    }
+}
+export async function ManageAdmin({id,action}:{action:"ADD"|"DELETE",id:number}):Promise<{error:string,success:boolean,data:string}>{
+    try{
+        let data:string ="";
+        switch(action){
+            case "ADD":
+                await prisma.roles.create({
+                    data:{
+                        userid:id,
+                        role:"ADMIN",
+                    }
+                })
+                data = "user added successfully"
+                break;
+            case "DELETE":
+                await prisma.roles.delete({
+                    where:{
+                        userid:id,
+                    }
+                })
+                data = "user deleted successfully"
+                break;
+        }
+        return {success:true, error:"",data}
+    }catch(e){
+        if(e instanceof Error){
+            return {error:`${e.name}-${e.message}`,success:false,data:"can't adde user"}
+        }
+        return {error:"Error Seraching User",success:false,data:"can't adde user"}
+    }
+}
+export async function GetAdmins({email}:{email?:string}):Promise<{error:string,success:boolean,data:UserTypeDB[]}>{
+    try{
+        let data:UserTypeDB[] = [];
+        if(email){  
+            const req = await prisma.user.findMany({
+                where:{
+                    email:{
+                        contains:email
+                    },
+                    roles:{
+                        some:{}
+                    }
+                },
+                include:{
+                    roles:true
+                }
+            })
+            req.forEach(({email,id,name})=>{
+                data.push({email,id,name,password:""})
+            })
+        }else{
+            const req = await prisma.user.findMany({
+                where:{
+                    roles:{
+                        some:{}
+                    }
+                },
+                include:{
+                    roles:true
+                }
+            })
+            req.forEach(e=>{
+                e.password = ""
+                data.push(e);
+            })
+            console.log('raw',req)
+        }
+        return {success:true, error:"",data}
+    }catch(e){
+        if(e instanceof Error){
+            return {error:`${e.name}-${e.message}`,success:false,data:[]}
+        }
+        return {error:"Error Seraching User",success:false,data:[]}
     }
 }
 

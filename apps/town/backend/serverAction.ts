@@ -1,6 +1,6 @@
 'use server'
 import { PreviewData } from "next";
-import { AddMapDB, AddNewRoomDB, DeleteMapDB, DeleteRoomDB, SignIn, SignUp, ToogleUserFromRoom, ToogleUserFromRoomControl, UpdateUser } from "./database";
+import { AddMapDB, AddNewRoomDB, DeleteMapDB, DeleteRoomDB, ManageAdmin, SignIn, SignUp, ToogleUserFromRoom, ToogleUserFromRoomControl, UpdateUser } from "./database";
 import { revalidatePath } from "next/cache";
 import { error } from "console";
 import { CreateJWTSession, GetJWTSession, isLogin } from "./Auth";
@@ -126,5 +126,24 @@ export async function ChangeUserNameServerAction(formState:PreviewData,formData:
     if(req.success && req.data){
         CreateJWTSession(req.data);
     }
+    return req;
+}
+
+export async function DeleteSuperAdminServerAction(formState:PreviewData,formData:FormData){
+    let data = {
+        id:parseInt(formData.get("id") as string),
+    };
+    if(isNaN(data.id)) return {error:"Invalid id",success:false,data:"Invalid id"};
+    const {success,error} = await ManageAdmin({...data,action:"DELETE"});
+    revalidatePath("/dashboard/admins","page")
+    return {success,error};
+}
+export async function AddSuperAdminServerAction(formState:PreviewData,formData:FormData){
+    const data = {
+        id:parseInt(formData.get("id") as string),
+    };
+    if(isNaN(data.id)) return {error:"Invalid id",success:false,data:"Invalid id"};
+    const req = await ManageAdmin({...data,action:"ADD"});
+    revalidatePath("/dashboard/admins","page")
     return req;
 }
