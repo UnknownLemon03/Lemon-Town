@@ -480,3 +480,44 @@ export async function GetAdmins({email}:{email?:string}):Promise<{error:string,s
     }
 }
 
+
+export async function GetRole({id}:{id:number}):Promise<{error:string,success:boolean,data:{userid: number,role: string}|null}>{
+    try{
+        const data = await prisma.roles.findFirst({
+            where:{
+                userid:id
+            }
+        })
+        return {success:true, error:"",data}
+    }catch(e){
+        if(e instanceof Error){
+            return {error:`${e.name}-${e.message}`,success:false,data:null}
+        }
+        return {error:"Error Seraching User",success:false,data:null}
+    }
+}
+export async function GetUserControlRooms({id}:{id:number}):Promise<{error:string,success:boolean,data:{
+    id: number;
+    name: string;
+    mapid: number;
+}[]}>{
+    try{
+        const data = await prisma.roomcontrol.findMany({
+            where:{
+                userid:id
+            },
+            include:{
+                room:true
+            }
+        })
+        const rooms = data.map(e=>e.room)
+        return {success:true, error:"",data:rooms}
+    }catch(e){
+        if(e instanceof Error){
+            return {error:`${e.name}-${e.message}`,success:false,data:[]}
+        }
+        return {error:"Error Seraching User",success:false,data:[]}
+    }
+}
+
+

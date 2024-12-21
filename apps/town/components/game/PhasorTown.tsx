@@ -7,7 +7,7 @@ import { cookies } from 'next/headers';
 import { MainPlayer } from './MainPlayer';
 import { getPlayerChar } from '@/backend/client';
 export const dynamic = 'no-catch'
-export default function PhasorTown({mapurl,player,roomid}:{mapurl:string,player?:number,roomid:number}) {
+export default function PhasorTown({mapurl,player,roomid,name}:{mapurl:string,player?:number,roomid:number,name:string}) {
     const ref = useRef<HTMLDivElement>(null);
     const[loading,setLoading] = useState(true);
     let [game, setGame] = useState<Game | null>(null);
@@ -42,7 +42,7 @@ export default function PhasorTown({mapurl,player,roomid}:{mapurl:string,player?
         MainPlayer.PlayerIconId = getPlayerChar();
         MainPlayer.RoomID = roomid
         MainPlayer.Auth = "test"
-        MainPlayer.Name = names[Math.floor(Math.random()*4)]
+        MainPlayer.Name = name
         Town.startX = 35;
         Town.startY = 27;
         if(!loading){

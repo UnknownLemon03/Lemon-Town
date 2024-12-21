@@ -4,8 +4,12 @@ import AddNewRoom from '@/components/AddNewRoom';
 import { GetAllMap } from '@/backend/database';
 import MapRow from './maprow';
 import AddMap from '@/components/AddMap';
+import { isAdmin } from '@/backend/Auth';
+import { redirect } from 'next/navigation';
 
 export default async function page() {
+    const admin = await isAdmin();
+    if(!admin) return redirect("/dashboard");
     const req = await GetAllMap({});
   return (
     <>

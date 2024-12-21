@@ -1,23 +1,32 @@
-import { LogOut } from "@/backend/Auth";
+import { isAdmin, isRoomAdmin, LogOut } from "@/backend/Auth";
 import NavPath from "@/components/NavPath";
 import Image from "next/image";
 import Link from "next/link";
 
 
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
     const links = [
-        {name:"Manage Rooms",icon:"/rooms.png",path:"/dashboard/rooms"},
-        {name:"Manage Rooms Users",icon:"/roomusers.png",path:"/dashboard/manage"},
-        {name:"Admins",icon:"/user.png",path:"/dashboard/admins"},
-        {name:"Accounts",icon:"/user.png",path:"/dashboard/users"},
-        {name:"Maps",icon:"/map.png",path:"/dashboard/maps"},
         {name:"Towns",icon:"/town.png",path:"/dashboard/towns"},
     ]
+    const isadmin = await isAdmin();
+    const isroomadmin = await isRoomAdmin();
+
+    if(isroomadmin){
+        links.push({name:"Manage Rooms Users",icon:"/roomusers.png",path:"/dashboard/manage"})
+    }
+    if(isadmin){
+        links.push({name:"Manage Rooms",icon:"/rooms.png",path:"/dashboard/rooms"})
+        links.push({name:"Admins",icon:"/user.png",path:"/dashboard/admins"})
+        links.push({name:"Accounts",icon:"/user.png",path:"/dashboard/users"})
+        links.push({name:"Maps",icon:"/map.png",path:"/dashboard/maps"})
+        
+    }
+
   return (
    
       <div className="px-20 pt-4 box-content relative ">

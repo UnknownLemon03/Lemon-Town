@@ -1,10 +1,16 @@
 import React from 'react'
 import Link from "next/link";
 import AddNewRoom from '@/components/AddNewRoom';
-import { DeleteRoomDB, GetRoomDB } from '@/backend/database';
+import { DeleteRoomDB, GetRoomDB, GetUserControlRooms } from '@/backend/database';
 import RoomRow from './roomsrow';
+import { isLogin, isRoomAdmin } from '@/backend/Auth';
+import { redirect } from 'next/navigation';
 export default async function page() {
-    const req = await GetRoomDB();
+    const islogin = await isLogin()
+    if(!islogin) return redirect("/login")
+    const isroomadmin = await isRoomAdmin(islogin.id);
+    if(!isroomadmin) redirect("/dashboard");
+    const req = await GetUserControlRooms({id:islogin.id});
   return (
     <>
         <h4 className="text-2xl font-bold dark:text-white mb-5">Manage Room </h4>

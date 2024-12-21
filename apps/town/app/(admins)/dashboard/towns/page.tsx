@@ -12,22 +12,20 @@ export default async function page() {
     const {data} = await GetRoomOfUser({id:loginData.id});
   return (
     <div className='flex justify-between w-full'>
-        <div className='    '>        
+        <div className='w-full'>        
                 {data.length == 0 && <p className="text-center text-xl font-thin text-gray-900 dark:text-white">No Town Available</p>}
-                {data.length > 0 && <div className='flex flex-wrap '>
-                {data.map((e,i)=> <div key={i} className="w-full h-32 flex-1 max-w-2xl px-6 py-5 m-3 bg-gray-50 border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                            <a href="#">
-                                <h5 className="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">{e.name}</h5>
-                            </a>
-                            <div className='relative'>
-                            <Link href={`/town?roomid=${e.roomid}`} className=" relative inline-flex items-center justify-start py-3 pl-4 pr-12 overflow-hidden font-semibold text-blue-600 ">
-                                <button type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-2 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
-                                    Default
-                                </button>
-                            </Link>
-                            </div>
-                        </div>)}
-                    </div>}
+                {data.map((e,i)=> <div key={i} className="block my-3 flex-col w-full bg-white border shadow-sm rounded-xl p-4 md:p-5">
+                    <h3 className="text-lg font-bold text-gray-800">
+                        {e.name}
+                    </h3>
+                    <Link href={`/town?roomid=${e.roomid}`} className="mt-3 inline-flex items-center gap-x-1 text-sm font-semibold rounded-lg border border-transparent text-blue-600 decoration-2 hover:text-blue-700 hover:underline focus:underline focus:outline-none focus:text-blue-700 disabled:opacity-50 disabled:pointer-events-none" >
+                        Join Town
+                        <svg className="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="m9 18 6-6-6-6"></path>
+                        </svg>
+                    </Link>
+                    </div>)}
+                    
         </div>
         <div className='min-w-44 mx-5'>
             <PlayerSelect playerName={loginData.name}/>
