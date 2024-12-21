@@ -62,7 +62,7 @@ export default function AddUser({roomid,ServerAction , placeholder}:{roomid:numb
       <div onClick={()=>{setHide(false)}}  className={`fixed backdrop-blur-md h-full bg-transparent min-w-[100%] min-h-[95vh] top-0 left-[0%] `} />
       <div className={`absolute left-[50%] top-[50%]`}>
         <div className='flex fixed flex-row content-between items-start' >
-            <div className=" max-w-sm mx-auto  w-[500px] bg-white p-[30px] rounded-lg border-2 border-gray-50 ">
+            <div className=" max-w-sm mx-auto  w-[500px] bg-gray-50  p-[30px] rounded-lg border-2 border-gray-50 ">
                     <form className="flex items-center max-w-sm mx-auto">   
                         <label htmlFor="simple-search" className="sr-only">Search</label>
                         <div className="relative w-full">
@@ -80,7 +80,9 @@ export default function AddUser({roomid,ServerAction , placeholder}:{roomid:numb
                             <span className="sr-only">Search</span>
                         </button>
                     </form>
-                   {suggestion.length > 0 && suggestion.slice(0,8).map((e,i)=><p key={i} onClick={()=>{ToggleUserFromRoom(e.id);setHide(false)}} className='w-full p-3 bg-gray-50 my-1 rounded-lg cursor-pointer text-center'>{e.email} {e.name!="" ?`(${e.name})`:""}</p>)}
+                    <div className='max-h-[300px] scrollbar-hidden overflow-y-scroll'>
+                        {suggestion.length > 0 && suggestion.map((e,i)=><p key={i} onClick={()=>{ToggleUserFromRoom(e.id);setHide(false)}} className='w-full p-3 bg-gray-50 my-1 rounded-lg cursor-pointer text-center'>{e.email} {e.name!="" ?`(${e.name})`:""}</p>)}
+                    </div>
                     
             </div>
             

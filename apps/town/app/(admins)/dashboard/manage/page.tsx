@@ -8,7 +8,7 @@ export default async function page() {
   return (
     <>
         <h4 className="text-2xl font-bold dark:text-white mb-5">Manage Room </h4>
-        <div className="overflow-x-auto shadow-md sm:rounded-lg ">
+        <div className="overflow-x-auto shadow-md sm:rounded-lg max-h-[560px] scrollbar-hidden">
             <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                 <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr>

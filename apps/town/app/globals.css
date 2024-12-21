@@ -4,5 +4,49 @@
 
 
 body {
+}
+
+.chaning-background{
   font-family: Arial, Helvetica, sans-serif;
+  background: linear-gradient(90deg, #13ffdc, #00fee7, #00fdf1, #00fcfb, #00efff, #00d5ff, #0bb8ff, #6098ff);
+  /* background: linear-gradient(90deg, #0e63ff, #009bff, #00c8ff, #00eee9, #00f7fa, #00e0ff, #8abdff, #e090ff); */
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+  height: 100vh;
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none; 
+}
+
+.scrollbar-hidden {
+  -ms-overflow-style: none;  
+  scrollbar-width: none;     
+}
+
+@keyframes gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
+
+.spinner {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: radial-gradient(farthest-side,#474bff 94%,#0000) top/9px 9px no-repeat,
+         conic-gradient(#0000 30%,#474bff);
+  -webkit-mask: radial-gradient(farthest-side,#0000 calc(100% - 9px),#000 0);
+  animation: spinner-c7wet2 1s infinite linear;
+}
+@keyframes spinner-c7wet2 {
+  100% {
+     transform: rotate(1turn);
+  }
 }

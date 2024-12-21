@@ -24,8 +24,7 @@ export async function ConnectSoket(x:number,y:number,room:number,{PlayerIconId,A
             rej(new Error(`Connection failed: ${err.message}`));
         });
         socket.on("disconnect",()=>{
-            toast.error("You are disconnected from server")
-            redirect("/dashboard")
+            toast.success("You are existing Town")
         })
     })
 }   
@@ -34,5 +33,8 @@ export async function ConnectSoket(x:number,y:number,room:number,{PlayerIconId,A
 export function getSocket(){
     // console.log("get socket",socket)
     return socket;
+}
+export function disconnectSocket(){
+    socket.disconnect();
 }
 

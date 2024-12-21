@@ -130,7 +130,6 @@ export async function SearchUser({email,name}:{email:string,name?:string}):Promi
             where:{
                 email:{contains:email}
             },
-            take:10 
         })
         return {success:true, error:"",data:req}
     }catch(e){
@@ -358,6 +357,50 @@ export async function DeleteMapDB({id}:{id:number}):Promise<{error:string,succes
             return {error:`${e.name}-${e.message}`,success:false}
         }
         return {error:"Error Seraching User",success:false}
+    }
+}
+
+export async function GetRoomOfUser({id}:{id:number}):Promise<{error:string,success:boolean,data:{roomid:number,name:string}[]}>{
+    try{
+ 
+        const temp = await prisma.roomaccess.findMany({
+            where:{
+                userid:id
+            },
+            include:{
+                room:true
+            }
+        })
+        const room = temp.map(e=>({roomid:e.roomid,name:e.room.name}))
+        console.log(temp)
+        return {success:true, error:"",data:room}
+    }catch(e){
+        if(e instanceof Error){
+            return {error:`${e.name}-${e.message}`,success:false,data:[]}
+        }
+        return {error:"Error Seraching User",success:false,data:[]}
+    }
+}
+
+export async function UpdateUser({name,id}:{name:string,id:number}):Promise<{error:string,success:boolean,data:UserTypeDB|null}>{
+    try{
+ 
+        const temp = await prisma.user.update({
+            where:{
+                id
+            },
+            data:{
+                name
+            }
+        })
+        console.log(temp)
+
+        return {success:true, error:"",data:temp}
+    }catch(e){
+        if(e instanceof Error){
+            return {error:`${e.name}-${e.message}`,success:false,data:null}
+        }
+        return {error:"Error Seraching User",success:false,data:null}
     }
 }
 

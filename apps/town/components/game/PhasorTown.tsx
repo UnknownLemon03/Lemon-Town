@@ -5,8 +5,9 @@ import { Town } from './Town'; // Assuming this is your custom scene
 import { ConnectSoket, getSocket } from './Socket';
 import { cookies } from 'next/headers';
 import { MainPlayer } from './MainPlayer';
+import { getPlayerChar } from '@/backend/client';
 export const dynamic = 'no-catch'
-export default function PhasorTown({mapurl,player}:{mapurl:string,player?:number}) {
+export default function PhasorTown({mapurl,player,roomid}:{mapurl:string,player?:number,roomid:number}) {
     const ref = useRef<HTMLDivElement>(null);
     const[loading,setLoading] = useState(true);
     let [game, setGame] = useState<Game | null>(null);
@@ -14,8 +15,8 @@ export default function PhasorTown({mapurl,player}:{mapurl:string,player?:number
         if (!ref.current) return;
         const config:Phaser.Types.Core.GameConfig = {
             type: Phaser.AUTO,
-            width: 1024,
-            height: 768,
+            width: 1400,
+            height: 780,
             zoom:1,
             parent: 'phasor-canvas-id',
             physics: {
@@ -38,8 +39,8 @@ export default function PhasorTown({mapurl,player}:{mapurl:string,player?:number
         const  names = ["lemon","apple","orange","cherry"]
 
         Town.MapLink = mapurl
-        MainPlayer.PlayerIconId = Math.ceil(Math.random() * 4)
-        MainPlayer.RoomID = 1
+        MainPlayer.PlayerIconId = getPlayerChar();
+        MainPlayer.RoomID = roomid
         MainPlayer.Auth = "test"
         MainPlayer.Name = names[Math.floor(Math.random()*4)]
         Town.startX = 35;

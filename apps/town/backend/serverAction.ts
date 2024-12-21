@@ -1,9 +1,9 @@
 'use server'
 import { PreviewData } from "next";
-import { AddMapDB, AddNewRoomDB, DeleteMapDB, DeleteRoomDB, SignIn, SignUp, ToogleUserFromRoom, ToogleUserFromRoomControl } from "./database";
+import { AddMapDB, AddNewRoomDB, DeleteMapDB, DeleteRoomDB, SignIn, SignUp, ToogleUserFromRoom, ToogleUserFromRoomControl, UpdateUser } from "./database";
 import { revalidatePath } from "next/cache";
 import { error } from "console";
-import { CreateJWTSession, GetJWTSession } from "./Auth";
+import { CreateJWTSession, GetJWTSession, isLogin } from "./Auth";
 import AddMap from "@/components/AddMap";
 
 export async function AddRoomServerAction(formState:PreviewData,formData:FormData){
@@ -111,5 +111,20 @@ export async function AddRoomAdminServerAction(formState:PreviewData,formData:Fo
             return {error:"Invalid data",success:false,data:''};
     const req = await ToogleUserFromRoomControl(data);
     if(req.success) revalidatePath(`/dashboard/manage/${data.roomid}`)
+    return req;
+}
+
+export async function ChangeUserNameServerAction(formState:PreviewData,formData:FormData){
+    const data = {
+        name:formData.get("name")! as string,
+    };
+    if(data.name.trim().length == 0)
+            return {error:"Invalid Name",success:false,data:''};
+    const user = await isLogin()
+    if(!user) return {error:"Login First",success:false,data:''};
+    const req = await UpdateUser({id:user.id,name:data.name});
+    if(req.success && req.data){
+        CreateJWTSession(req.data);
+    }
     return req;
 }
