@@ -86,7 +86,7 @@ export class MainPlayer extends Player {
         // Handle diagonal and regular movement
 
         if (this.cursorKeys.shift.isDown) {
-            this.playerSpeed = 150;  // Increase speed when Shift is pressed
+            this.playerSpeed = 200;  // Increase speed when Shift is pressed
         } else {
             this.playerSpeed = 100;  // Default speed when Shift is not pressed
         }

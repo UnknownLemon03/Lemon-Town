@@ -1,7 +1,7 @@
 console.clear();
 import { Server, Socket } from "socket.io";
 import http from 'http';
-import {  GetRoomDB } from "./database/db";
+import {  GetAuthRoom, GetRoomDB } from "./database/db";
 import jwt from "jsonwebtoken"
 const server = http.createServer();
 const io = new Server(server, {
@@ -14,64 +14,74 @@ const io = new Server(server, {
 io.on('connection', (socket: Socket) => {
     // this event gives coordinate to other player 
     socket.timeout(5000).emit("AUTH",(err: Error | null, response: any) => {
-        if (err) {
-            console.log("timeout exiceed")
-            // socket.disconnect();
-        } else {
-            if(!response && !response?.Auth)
-                return socket.disconnect();
-            
-                // const authdata = jwt.verify(response.Auth,process.env.JWT_SECRETE as string);
-                console.log("Auth data complete",socket.id)
+        try{
+            if (err) {
+                console.log("timeout exiceed")
+                // socket.disconnect();
+            } else {
+                if(!response && !response?.Auth)
+                    return socket.disconnect();
+                console.clear();
+                const authdata = jwt.verify(response.Auth,process.env.JWT_SECRETE as string);
+            }
+        }catch(e){
+            socket.disconnect();
         }
     });
     socket.on("UpdatePlayerLocation",(data:{roomName:number,userData:{x:number,y:number,Auth:string} })=>{
         // send to every other player except sender 
-        console.log(socket.data.info,"update player location")
         socket.broadcast.to(`${data.roomName}`).emit("UserNewLocation",{id:socket.id,x:data.userData.x,y:data.userData.y})
         // i'm also saving this in on server on player socket instance
         socket.data.info.x = data.userData.x;
         socket.data.info.y = data.userData.y;
     })
 
-    socket.on('joinRoom', (data: { roomName: Number, userData: {x:number,y:number , Auth:string,PlayerIconId:number,name:string} }) => {
-        if(!data.userData.Auth){
-            console.log("user disconncected no auth join room")
-            // return socket.disconnect();
-        }
-        // const authdata = jwt.verify(data.userData.Auth,process.env.JWT_SECRETE as string);
-        const { roomName, userData } = data;
-        socket.join(`${roomName}`);
-        const newUserId = socket.id;
-        socket.data.info = {x:userData.x,y:userData.y,PlayerIconId:data.userData.PlayerIconId,name:userData.name};
-        // infoming other player on server about player 
-        console.log(socket.data.info,"Join room",data.userData)
-        socket.broadcast.to(`${data.roomName}`).emit("NewPlayer",{
-            id:newUserId,
-            x:userData.x,
-            y:userData.y,
-            PlayerIconId:data.userData.PlayerIconId,
-            name:userData.name
-        })
-        console.log('new user info',socket.data.info)
-        // here i'm getting all players on room and sending their details to new joined player
-        const clientsInRoom = io.sockets.adapter.rooms.get(`${roomName}`);
-        let ExistingPlayers:{id:string,x:number,y:number,PlayerIconId:number,name:string}[] = []
-        if (clientsInRoom) {    
-            clientsInRoom.forEach((clientId: string) => {
-                if (clientId != newUserId) {
-                    const clientSocket = io.sockets.sockets.get(clientId);
-                    if(clientSocket){
-                        ExistingPlayers.push({id:clientId,x:clientSocket.data.info.x,y:clientSocket.data.info.y,PlayerIconId:clientSocket.data.info.PlayerIconId,name:clientSocket.data.info.name})
+    socket.on('joinRoom',async (data: { roomName: number, userData: {x:number,y:number , Auth:string,PlayerIconId:number,name:string} }) => {
+        try{
+
+            if(!data.userData.Auth){
+                console.log("user disconncected no auth join room")
+                return socket.disconnect();
+            }
+            // const authdata = jwt.verify(data.userData.Auth,process.env.JWT_SECRETE as string);
+            const { roomName, userData } = data;
+            const {success} = await GetRoomDB({id:roomName})
+            if(!success) return socket.disconnect()
+            const authdata = jwt.verify(data.userData.Auth,process.env.JWT_SECRETE as string) as {id:number,name:string};    
+            const {success:hasRoomAccess} = await GetAuthRoom({roomid:roomName,userid:authdata.id})
+            if(!hasRoomAccess) return socket.disconnect();
+            socket.join(`${roomName}`);
+            const newUserId = socket.id;
+            socket.data.info = {x:userData.x,y:userData.y,PlayerIconId:data.userData.PlayerIconId,name:userData.name};
+            // infoming other player on server about player 
+            console.log(socket.data.info,"Join room",data.userData)
+            socket.broadcast.to(`${data.roomName}`).emit("NewPlayer",{
+                id:newUserId,
+                x:userData.x,
+                y:userData.y,
+                PlayerIconId:data.userData.PlayerIconId,
+                name:userData.name
+            })
+            console.log('new user info',socket.data.info)
+            // here i'm getting all players on room and sending their details to new joined player
+            const clientsInRoom = io.sockets.adapter.rooms.get(`${roomName}`);
+            let ExistingPlayers:{id:string,x:number,y:number,PlayerIconId:number,name:string}[] = []
+            if (clientsInRoom) {    
+                clientsInRoom.forEach((clientId: string) => {
+                    if (clientId != newUserId) {
+                        const clientSocket = io.sockets.sockets.get(clientId);
+                        if(clientSocket){
+                            ExistingPlayers.push({id:clientId,x:clientSocket.data.info.x,y:clientSocket.data.info.y,PlayerIconId:clientSocket.data.info.PlayerIconId,name:clientSocket.data.info.name})
+                        }
                     }
-                }
+                });
+            }
+            console.log("send exnsint player",ExistingPlayers)
+            socket.emit("GetExistingPlayer", {
+                id: newUserId,
+                userData: {ExistingPlayers}
             });
-        }
-        console.log("send exnsint player",ExistingPlayers)
-        socket.emit("GetExistingPlayer", {
-            id: newUserId,
-            userData: {ExistingPlayers}
-        });
+        }catch(e){}
     });
     // sending other that player has been disconnected to all connected player , lemon remember to change this to send to only that room
     socket.on('disconnect', () => {

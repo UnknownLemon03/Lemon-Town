@@ -6,8 +6,10 @@ import { ConnectSoket, getSocket } from './Socket';
 import { cookies } from 'next/headers';
 import { MainPlayer } from './MainPlayer';
 import { getPlayerChar } from '@/backend/client';
+import { redirect } from 'next/navigation';
+import { getAuthToken } from '@/backend/Auth';
 export const dynamic = 'no-catch'
-export default function PhasorTown({mapurl,player,roomid,name}:{mapurl:string,player?:number,roomid:number,name:string}) {
+export default function PhasorTown({mapurl,roomid,name}:{mapurl:string,roomid:number,name:string}) {
     const ref = useRef<HTMLDivElement>(null);
     const[loading,setLoading] = useState(true);
     let [game, setGame] = useState<Game | null>(null);
@@ -15,7 +17,7 @@ export default function PhasorTown({mapurl,player,roomid,name}:{mapurl:string,pl
         if (!ref.current) return;
         const config:Phaser.Types.Core.GameConfig = {
             type: Phaser.AUTO,
-            width: 1400,
+            width: 1600,
             height: 780,
             zoom:1,
             parent: 'phasor-canvas-id',
@@ -35,8 +37,7 @@ export default function PhasorTown({mapurl,player,roomid,name}:{mapurl:string,pl
             antialias: false,
         };
 
-        //temp 
-        const  names = ["lemon","apple","orange","cherry"]
+        
 
         Town.MapLink = mapurl
         MainPlayer.PlayerIconId = getPlayerChar();
@@ -52,8 +53,11 @@ export default function PhasorTown({mapurl,player,roomid,name}:{mapurl:string,pl
                     game.destroy(true);
             };
         }else{
-            ConnectSoket(Town.startX*32,Town.startY*32,MainPlayer.RoomID,{PlayerIconId:MainPlayer.PlayerIconId,Auth:"tset",name:MainPlayer.Name}).then(e=>{
-                setLoading(false);
+            getAuthToken().then(e=>{    
+                if(!e) return redirect("/login")
+                ConnectSoket(Town.startX*32,Town.startY*32,MainPlayer.RoomID,{PlayerIconId:MainPlayer.PlayerIconId,Auth:e,name:MainPlayer.Name}).then(e=>{
+                    setLoading(false);
+                })
             })
         }
     }, [loading]); 

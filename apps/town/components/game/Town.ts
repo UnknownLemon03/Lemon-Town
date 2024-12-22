@@ -27,8 +27,11 @@ export class Town extends Scene
 
     preload(){
         this.load.tilemapTiledJSON('map', Town.MapLink);
-        this.load.image('Room_Builder', '/town/Room_Builder.png');
-        this.load.image('Interiors', '/town/Interiors.png');
+        // this.load.image('Room_Builder', '/town/Room_Builder.png');
+        // this.load.image('Interiors', '/town/Interiors.png');
+        this.load.image('assets', '/town/assets.png');
+        this.load.image('assets2', '/town/assets2.png');
+        this.load.image('base', '/town/base.png');
 
 
         for(let i = 1; i <= Town.TownPlayerCharatersCount; i++){
@@ -122,18 +125,20 @@ export class Town extends Scene
             });
         }
        this.map = this.make.tilemap({ key: 'map' , width:40, height:30 });
-       const tileset1 = this.map.addTilesetImage('Room_Builder', "Room_Builder");
-       const tileset2 = this.map.addTilesetImage('Interiors', 'Interiors');
-       this.groundLayer1 = this.map.createLayer('base', [tileset1,tileset2], 0, 0);
-       this.groundLayer2 = this.map.createLayer('upper', [tileset1,tileset2], 0, 0);  
-       this.groundLayer3 = this.map.createLayer('overhead', [tileset1,tileset2], 0, 0);  
+    //    const tileset1 = this.map.addTilesetImage('Room_Builder', "Room_Builder");
+    //    const tileset2 = this.map.addTilesetImage('Interiors', 'Interiors');
+       const assets = this.map.addTilesetImage('assets', "assets");
+       const assets2 = this.map.addTilesetImage('assets2', 'assets2');
+       const base = this.map.addTilesetImage('base', "base");
+       this.groundLayer1 = this.map.createLayer('base', [assets,assets2,base], 0, 0);
+       this.groundLayer2 = this.map.createLayer('upper', [assets,assets2,base], 0, 0);  
+       this.groundLayer3 = this.map.createLayer('overhead', [assets,assets2,base], 0, 0);  
        this.groundLayer1?.setDepth(0)
        this.groundLayer2?.setDepth(0);  
        this.groundLayer3?.setDepth(10)
        this.groundLayer2?.setCollisionByProperty({ collide: true });
 
-       let targx = 32*35;
-       let targy = 32*27;
+
        this.mainPlayer = new MainPlayer(this,Math.ceil(Town.startX*32),Math.ceil(Town.startY*32))
        this.physics.add.collider(this.mainPlayer, this.groundLayer2!);
 

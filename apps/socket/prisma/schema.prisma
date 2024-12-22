@@ -26,7 +26,7 @@ model user {
 model roles {
   userid Int @unique()
   role String 
-  authorref user  @relation(fields: [userid], references: [id])
+  user user  @relation(fields: [userid], references: [id])
 }
 
 model room{

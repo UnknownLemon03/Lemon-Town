@@ -15,8 +15,8 @@ export default async function page({searchParams}:{searchParams:{roomid:string}}
   if(isNaN(id)) return redirect("/dashboard/towns")
   const access = await checkRoomAccess(id,login.id);
   if(!access) return redirect("/dashboard");
-  return (<>
+  return (<div className="chaning-background">
     <Town roomid={id} name={login.name}/>
-</>
+</div>
   )
 }

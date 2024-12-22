@@ -18,7 +18,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         this.setCollideWorldBounds(true);  
         this.setBounce(0.2);                       
         
-        this.setScale(2);  // Scale the player sprite
+        this.setScale(3);  // Scale the player sprite
         
         // Player movement properties
         this.speed = 100;  // Default movement speed

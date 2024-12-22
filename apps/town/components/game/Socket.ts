@@ -25,6 +25,7 @@ export async function ConnectSoket(x:number,y:number,room:number,{PlayerIconId,A
         });
         socket.on("disconnect",()=>{
             toast.success("You are existing Town")
+            return redirect("/dashboard/towns")
         })
     })
 }   

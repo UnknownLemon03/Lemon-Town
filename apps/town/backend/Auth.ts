@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { GetRole } from "./database";
 import { PrismaClient } from '@prisma/client';
+import { GSP_NO_RETURNED_VALUE } from "next/dist/lib/constants";
 const prisma  = new PrismaClient();
 export async function CreateJWTSession(e:UserTypeDB){
     const data = {
@@ -94,4 +95,11 @@ export  async function checkRoomAccess(roomid:number,userid:number){
     console.log(req,"room access");
     if(req) return true;
     return false;
+}
+
+export async function getAuthToken(){
+    const cookie = await cookies();
+    const req = cookie.get("AUTH");
+    if(!req) return null;
+    return req.value;
 }
