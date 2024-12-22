@@ -29,7 +29,7 @@ export default async function RootLayout({
 
   return (
    
-      <div className="px-20 pt-4 box-content relative ">
+      <div className="pl-20 pr-[3rem] pt-4 box-content relative ">
         
 
         <button data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar" aria-controls="default-sidebar" type="button" className="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
@@ -43,7 +43,7 @@ export default async function RootLayout({
             <div className="h-full px-3 py-4 overflow-y-auto bg-transparent">
                 <span  className="flex items-center ps-2.5 mb-5">
                     <Image src="/icon.png" width={40} height={40}  alt="Flowbite Logo" />
-                <   span className="self-center text-xl mt-5 mx-2 font-semibold whitespace-nowrap dark:text-white">Lemon Town</span>
+                <   span className="self-center text-xl mt-5 mx-2 font-semibold whitespace-nowrap text-white">Lemon Town</span>
                 </span>
                 <ul className="space-y-2 font-medium">
                     {links.map((e,i) => (

@@ -43,7 +43,7 @@ export default function AuthForm({mode}:{mode:boolean}) {
   }
   return (
     <>
-    <div className="min-h-[93vh]  flex items-center justify-center ">
+    <div className="min-h-[93vh]  flex items-center justify-center background-main">
       <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
         {isLogin ? (
           <>
@@ -76,7 +76,9 @@ export default function AuthForm({mode}:{mode:boolean}) {
             </form>
             <span className="mt-5 inline-block text-sm text-gray-500 dark:text-gray-400"> Already have account ? <span onClick={()=>setIsLogin(e=>!e)} className=" cursor-pointer  font-medium text-blue-600 hover:underline dark:text-blue-500">Register</span></span>
           </div>
-          <Link href={'/books'} className=" inline-block text-sm text-gray-500 dark:text-gray-400"> Explore <span className=" cursor-pointer  font-medium text-blue-600 hover:underline dark:text-blue-500">Books</span></Link>
+          <Link href={'/'} className=" inline-block text-sm text-gray-500 dark:text-gray-400"> 
+           <span className=" cursor-pointer  font-medium text-blue-600 hover:underline dark:text-blue-500">Home</span>
+          </Link>
           </>
         ) : (
           <>
