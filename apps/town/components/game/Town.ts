@@ -146,7 +146,7 @@ export class Town extends Scene
        this.subPlayerGroup = this.add.group();
        // socket connection 
         const io = getSocket();
-        console.log("SOCKET SETUP DONE")
+        console.log("SOCKET SETUP DONE",io)
         io.on('GetExistingPlayer', (data) => {
             const {userData:{ExistingPlayers},id} = data;
             console.log("GetExistingPlayer",data)

@@ -8,6 +8,7 @@ import { MainPlayer } from './MainPlayer';
 import { getPlayerChar } from '@/backend/client';
 import { redirect } from 'next/navigation';
 import { getAuthToken } from '@/backend/Auth';
+import TownBar from '../meet/TownBar';
 export const dynamic = 'no-catch'
 export default function PhasorTown({mapurl,roomid,name}:{mapurl:string,roomid:number,name:string}) {
     const ref = useRef<HTMLDivElement>(null);
@@ -42,7 +43,7 @@ export default function PhasorTown({mapurl,roomid,name}:{mapurl:string,roomid:nu
         Town.MapLink = mapurl
         MainPlayer.PlayerIconId = getPlayerChar();
         MainPlayer.RoomID = roomid
-        MainPlayer.Auth = "test"
+        
         MainPlayer.Name = name
         Town.startX = 35;
         Town.startY = 27;
@@ -58,13 +59,17 @@ export default function PhasorTown({mapurl,roomid,name}:{mapurl:string,roomid:nu
                 ConnectSoket(Town.startX*32,Town.startY*32,MainPlayer.RoomID,{PlayerIconId:MainPlayer.PlayerIconId,Auth:e,name:MainPlayer.Name}).then(e=>{
                     setLoading(false);
                 })
+                MainPlayer.Auth = e
             })
         }
     }, [loading]); 
 
     return (
         <>
-            <div ref={ref} className='flex justify-center items-center h-screen'></div>
+            <div ref={ref} className='flex flex-col-reverse  justify-center items-center h-screen'>
+
+                <TownBar/>
+            </div>
         </>
     );
 }

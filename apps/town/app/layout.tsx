@@ -26,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased h-[98vh] w-full`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased h-[98vh] w-full relative`}
       >
         <ToastProvider>
           {children}

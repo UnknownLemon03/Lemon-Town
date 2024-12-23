@@ -1,5 +1,7 @@
 'use server'
 import { SignUp } from '@/backend/database';
+import Chat from '@/components/meet/Chat';
+import TownBar from '@/components/meet/TownBar';
 import React from 'react'
 
 export default async function page() {
@@ -9,5 +11,9 @@ export default async function page() {
   //   const req = await SignUp({email:email,password:'test',name:mail[Math.floor(Math.random()*3)]})
   //   console.log(req)
   // }
-  return <></>
+  return <>
+  {/* <div className='h-full w-full flex justify-center items-center'> */}
+    <TownBar/>
+  {/* </div> */}
+  </>
 } 

@@ -21,10 +21,10 @@ io.on('connection', (socket: Socket) => {
             } else {
                 if(!response && !response?.Auth)
                     return socket.disconnect();
-                console.clear();
                 const authdata = jwt.verify(response.Auth,process.env.JWT_SECRETE as string);
             }
         }catch(e){
+            console.log("something error ")
             socket.disconnect();
         }
     });
@@ -32,13 +32,14 @@ io.on('connection', (socket: Socket) => {
         // send to every other player except sender 
         socket.broadcast.to(`${data.roomName}`).emit("UserNewLocation",{id:socket.id,x:data.userData.x,y:data.userData.y})
         // i'm also saving this in on server on player socket instance
+        console.log("update is working")
         socket.data.info.x = data.userData.x;
         socket.data.info.y = data.userData.y;
     })
 
     socket.on('joinRoom',async (data: { roomName: number, userData: {x:number,y:number , Auth:string,PlayerIconId:number,name:string} }) => {
         try{
-
+            console.log("join room working but something is not ")
             if(!data.userData.Auth){
                 console.log("user disconncected no auth join room")
                 return socket.disconnect();
@@ -81,7 +82,9 @@ io.on('connection', (socket: Socket) => {
                 id: newUserId,
                 userData: {ExistingPlayers}
             });
-        }catch(e){}
+        }catch(e){
+            console.log("join room error",e )
+        }
     });
     // sending other that player has been disconnected to all connected player , lemon remember to change this to send to only that room
     socket.on('disconnect', () => {
