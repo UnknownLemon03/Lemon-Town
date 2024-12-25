@@ -9,6 +9,7 @@ import { getPlayerChar } from '@/backend/client';
 import { redirect } from 'next/navigation';
 import { getAuthToken } from '@/backend/Auth';
 import TownBar from '../meet/TownBar';
+import { ConnectSoketSFU, getSocketSFU } from './SFU';
 export const dynamic = 'no-catch'
 export default function PhasorTown({mapurl,roomid,name}:{mapurl:string,roomid:number,name:string}) {
     const ref = useRef<HTMLDivElement>(null);
@@ -54,12 +55,15 @@ export default function PhasorTown({mapurl,roomid,name}:{mapurl:string,roomid:nu
                     game.destroy(true);
             };
         }else{
-            getAuthToken().then(e=>{    
+            getAuthToken().then(async e=>{    
+                console.log("working once 1")
                 if(!e) return redirect("/login")
-                ConnectSoket(Town.startX*32,Town.startY*32,MainPlayer.RoomID,{PlayerIconId:MainPlayer.PlayerIconId,Auth:e,name:MainPlayer.Name}).then(e=>{
-                    setLoading(false);
-                })
                 MainPlayer.Auth = e
+                ConnectSoket(Town.startX*32,Town.startY*32,MainPlayer.RoomID,{PlayerIconId:MainPlayer.PlayerIconId,Auth:e,name:MainPlayer.Name}).then(()=>{
+                    ConnectSoketSFU({room:roomid,Auth:e,name:MainPlayer.Name}).then(()=>{
+                        setLoading(false)
+                    })
+                })
             })
         }
     }, [loading]); 
@@ -67,8 +71,7 @@ export default function PhasorTown({mapurl,roomid,name}:{mapurl:string,roomid:nu
     return (
         <>
             <div ref={ref} className='flex flex-col-reverse  justify-center items-center h-screen'>
-
-                <TownBar/>
+            <TownBar/>
             </div>
         </>
     );

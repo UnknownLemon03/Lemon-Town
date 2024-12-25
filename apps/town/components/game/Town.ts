@@ -146,24 +146,18 @@ export class Town extends Scene
        this.subPlayerGroup = this.add.group();
        // socket connection 
         const io = getSocket();
-        console.log("SOCKET SETUP DONE",io)
         io.on('GetExistingPlayer', (data) => {
             const {userData:{ExistingPlayers},id} = data;
-            console.log("GetExistingPlayer",data)
             AllSidePlayers.CreatePlayers(this,ExistingPlayers)
         });
         io.on('NewPlayer', (data) => {
             const {id,x,y,PlayerIconId,name} = data;
-            console.log("new player",data)
             AllSidePlayers.AddPlayer(this,id,{x,y,PlayerIconId,name});
         });
         io.on("UserNewLocation",(data)=>{
             AllSidePlayers.UpdatePlayer(this,data.id,{x:data.x,y:data.y})
-            console.log(data,"UserNewLocation")
         })
         io.on("RoomRemoveResponse",({id})=>{
-            console.log('remove user fire')
-            console.log(id)
             AllSidePlayers.RemovePlayer(this,id)
         })
         io.emit('joinRoom', { 

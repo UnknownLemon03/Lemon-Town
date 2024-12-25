@@ -98,3 +98,19 @@ io.on('connection', (socket: Socket) => {
 server.listen(3000, () => {
     console.log('Server running on port 3000');
 });
+
+
+setInterval(()=>{
+    console.clear();
+    let ExistingUser:{id:string,name:string}[] = []
+    const clientsInRoom = io.sockets.adapter.rooms.get('1');
+    if (clientsInRoom) {    
+        clientsInRoom.forEach((clientId: string) => {
+            const clientSocket = io.sockets.sockets.get(clientId);
+            if(clientSocket){
+               console.log(clientSocket.data.info)
+            }
+        });
+    }
+    console.log("old users",ExistingUser)
+},2000)

@@ -11,6 +11,7 @@ export class MainPlayer extends Player {
     static RoomID:number
     static Name:string = "lemon"
     static Auth:string
+    static Active:boolean = true;
     //@ts-expect-error
     cursorKeys: Phaser.Input.Keyboard.CursorKey;
     playerSpeed: number;
@@ -84,8 +85,8 @@ export class MainPlayer extends Player {
 
     updatePlayer(): void {
         // Handle diagonal and regular movement
-
-        if (this.cursorKeys.shift.isDown) {
+        if(!MainPlayer.Active) return
+        if (this.cursorKeys.space.isDown) {
             this.playerSpeed = 200;  // Increase speed when Shift is pressed
         } else {
             this.playerSpeed = 100;  // Default speed when Shift is not pressed

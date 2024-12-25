@@ -6,12 +6,15 @@ import { disconnectSocket, getSocket } from '@/components/game/Socket';
 import toast from 'react-hot-toast';
 import { redirect } from 'next/navigation';
 import TownBar from '@/components/meet/TownBar';
+import { disconnectSocketSFU, UserChat } from '@/components/game/SFU';
 const PhasorTown = dynamic(
   () => import('@/components/game/PhasorTown'),
   { ssr: false }
 );
 export default function Town({roomid,name}:{roomid:number,name:string}) {
   function handleExit(){
+    UserChat.clear();
+    disconnectSocketSFU();
     disconnectSocket();
     return redirect("/dashboard/towns")
   }

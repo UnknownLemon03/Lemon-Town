@@ -40,9 +40,6 @@ export class SidePlayer extends Player {
         if (this.movementStack.length > 0) {
             this.currX = this.movementStack[0].x;
             this.currY = this.movementStack[0].y;
-            console.log("true",this.currX,this.currY)
-            console.log("true",this.x,this.y)
-            console.log("ans",Math.sqrt(Math.pow(this.x - this.currX, 2) + Math.pow(this.y - this.currY, 2)))
             if(Math.sqrt(Math.pow(this.x - this.currX, 2) + Math.pow(this.y - this.currY, 2))<5){
                 this.movementStack.shift();
             }
@@ -115,8 +112,6 @@ export class AllSidePlayers {
         const player = new SidePlayer(sence,loc.x,loc.y,id,loc.PlayerIconId,loc.name);
         AllSidePlayers.Players[id] = player;
         sence.subPlayerGroup.add(AllSidePlayers.Players[id])
-        console.clear();    
-        console.log("side player paded ",loc.name)
     }
     static UpdatePlayer(sence:Scene,socketId:string,data:{x:number,y:number}){
         try{
@@ -127,17 +122,13 @@ export class AllSidePlayers {
         }
     }
     static CreatePlayers(sence:Scene,data:{id:string,x:number,y:number,PlayerIconId:number,name:string}[]){
-        console.log("add exiting player in new player")
         data.forEach((e)=>{
             AllSidePlayers.AddPlayer(sence,e.id,{x:e.x,y:e.y,PlayerIconId:e.PlayerIconId,name:e.name})
         })
-        console.log("create player",AllSidePlayers.Players)
     }
     static RemovePlayer(scene:Scene,id:string){
-        console.log(id,AllSidePlayers.Players)
         const player = AllSidePlayers.Players[id]!;
         if(player){
-            console.log(player)
             player.delete();
             delete  AllSidePlayers.Players[id]
         }
