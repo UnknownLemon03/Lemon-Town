@@ -2,16 +2,18 @@ import Phaser from 'phaser';
 import { Player } from './Player';
 import { getSocket } from './Socket';
 import { AllSidePlayers } from './SidePlayer';
+import { Dispatch } from 'react';
 
 
 
 export class MainPlayer extends Player {
-    static NearPlayer: { [id: string]: boolean } = {}; // Using a record type for static player tracking
+    static NearPlayer: { [id: string]: string } = {}; // Using a record type for static player tracking
     static PlayerIconId:number =1;
     static RoomID:number
     static Name:string = "lemon"
     static Auth:string
     static Active:boolean = true;
+    static NearPlayerSub:Dispatch<any>;
     //@ts-expect-error
     cursorKeys: Phaser.Input.Keyboard.CursorKey;
     playerSpeed: number;
@@ -20,6 +22,7 @@ export class MainPlayer extends Player {
     movement: string;
     playerName:string;
     nameText: Phaser.GameObjects.Text;
+    
     constructor(scene: Phaser.Scene, x: number, y: number) {
         super(scene, x, y,MainPlayer.PlayerIconId);
         this.playerName = MainPlayer.Name
@@ -59,13 +62,15 @@ export class MainPlayer extends Player {
 
     }
 
-    static AddPlayer(id: string): void {
-        MainPlayer.NearPlayer[id] = true;
+    static AddPlayer(id: number,name:string): void {
+        MainPlayer.NearPlayer[id] = name;
+        if(MainPlayer.NearPlayerSub) MainPlayer.NearPlayerSub({...MainPlayer.NearPlayer})
     }
 
-    static RemovePlayer(id: string): void {
+    static RemovePlayer(id: number): void {
         if (id in MainPlayer.NearPlayer) {
             delete MainPlayer.NearPlayer[id];
+            if(MainPlayer.NearPlayerSub) MainPlayer.NearPlayerSub({...MainPlayer.NearPlayer})
         }
     }
 

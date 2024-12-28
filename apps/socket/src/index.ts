@@ -21,27 +21,27 @@ io.on('connection', (socket: Socket) => {
             } else {
                 if(!response && !response?.Auth)
                     return socket.disconnect();
-                const authdata = jwt.verify(response.Auth,process.env.JWT_SECRETE as string);
+                const authdata = jwt.verify(response.Auth,process.env.JWT_SECRETE as string) as null | {id:number,name:string};
+                console.log(authdata,'auth data')
+                if(!authdata?.id) return socket.disconnect();
+                socket.data.info.id = authdata.id;
             }
         }catch(e){
             console.log("something error ")
-            socket.disconnect();
+            // socket.disconnect();
         }
     });
     socket.on("UpdatePlayerLocation",(data:{roomName:number,userData:{x:number,y:number,Auth:string} })=>{
         // send to every other player except sender 
         socket.broadcast.to(`${data.roomName}`).emit("UserNewLocation",{id:socket.id,x:data.userData.x,y:data.userData.y})
         // i'm also saving this in on server on player socket instance
-        console.log("update is working")
         socket.data.info.x = data.userData.x;
         socket.data.info.y = data.userData.y;
     })
 
     socket.on('joinRoom',async (data: { roomName: number, userData: {x:number,y:number , Auth:string,PlayerIconId:number,name:string} }) => {
         try{
-            console.log("join room working but something is not ")
             if(!data.userData.Auth){
-                console.log("user disconncected no auth join room")
                 return socket.disconnect();
             }
             // const authdata = jwt.verify(data.userData.Auth,process.env.JWT_SECRETE as string);
@@ -53,31 +53,31 @@ io.on('connection', (socket: Socket) => {
             if(!hasRoomAccess) return socket.disconnect();
             socket.join(`${roomName}`);
             const newUserId = socket.id;
-            socket.data.info = {x:userData.x,y:userData.y,PlayerIconId:data.userData.PlayerIconId,name:userData.name};
+            socket.data.info = {x:userData.x,y:userData.y,PlayerIconId:data.userData.PlayerIconId,name:userData.name,id:authdata.id};
             // infoming other player on server about player 
-            console.log(socket.data.info,"Join room",data.userData)
             socket.broadcast.to(`${data.roomName}`).emit("NewPlayer",{
                 id:newUserId,
                 x:userData.x,
                 y:userData.y,
                 PlayerIconId:data.userData.PlayerIconId,
-                name:userData.name
+                name:userData.name,
+                DBid:authdata.id
             })
-            console.log('new user info',socket.data.info)
             // here i'm getting all players on room and sending their details to new joined player
             const clientsInRoom = io.sockets.adapter.rooms.get(`${roomName}`);
-            let ExistingPlayers:{id:string,x:number,y:number,PlayerIconId:number,name:string}[] = []
+            let ExistingPlayers:{id:string,x:number,y:number,PlayerIconId:number,name:string,DBid:number}[] = []
             if (clientsInRoom) {    
                 clientsInRoom.forEach((clientId: string) => {
                     if (clientId != newUserId) {
                         const clientSocket = io.sockets.sockets.get(clientId);
                         if(clientSocket){
-                            ExistingPlayers.push({id:clientId,x:clientSocket.data.info.x,y:clientSocket.data.info.y,PlayerIconId:clientSocket.data.info.PlayerIconId,name:clientSocket.data.info.name})
+                            ExistingPlayers.push({id:clientId,x:clientSocket.data.info.x,y:clientSocket.data.info.y,PlayerIconId:clientSocket.data.info.PlayerIconId,name:clientSocket.data.info.name
+                                ,DBid:clientSocket.data.info.id
+                            })
                         }
                     }
                 });
             }
-            console.log("send exnsint player",ExistingPlayers)
             socket.emit("GetExistingPlayer", {
                 id: newUserId,
                 userData: {ExistingPlayers}
@@ -99,10 +99,8 @@ server.listen(3000, () => {
     console.log('Server running on port 3000');
 });
 
-
 setInterval(()=>{
-    console.clear();
-    let ExistingUser:{id:string,name:string}[] = []
+    // console.clear();
     const clientsInRoom = io.sockets.adapter.rooms.get('1');
     if (clientsInRoom) {    
         clientsInRoom.forEach((clientId: string) => {
@@ -112,5 +110,5 @@ setInterval(()=>{
             }
         });
     }
-    console.log("old users",ExistingUser)
+    
 },2000)

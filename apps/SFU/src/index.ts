@@ -3,6 +3,8 @@ import { Server, Socket } from "socket.io";
 import http from 'http';
 import {  GetAuthRoom, GetRoomDB } from "./database/db";
 import jwt from "jsonwebtoken"
+import { GetRoomToken } from "./room";
+import { v4 } from "uuid";
 const server = http.createServer();
 const io = new Server(server, {
     cors: {
@@ -11,6 +13,10 @@ const io = new Server(server, {
     }
 });
 
+export enum MeetType {
+    "local",
+    'private'
+}
 io.on('connection', (socket: Socket) => {
     // this event gives coordinate to other player 
     socket.timeout(5000).emit("AUTH",async (err: Error | null, response: {
@@ -32,9 +38,9 @@ io.on('connection', (socket: Socket) => {
                 socket.data.info = {id:userdata.id,name:userdata.name,roomid:response.roomId} as {id:number,name:string};
                 
                 socket.join(`${response.roomId}`)
-                socket.to(`${response.roomId}`).emit("NewUser",{id:socket.id,name:userdata.name})
+                socket.to(`${response.roomId}`).emit("NewUser",{id:socket.id,name:userdata.name,DBid:userdata.id})
                 
-                let ExistingUser:{id:string,name:string}[] = []
+                let ExistingUser:{id:string,name:string,DBid:number}[] = []
                 const newUserSocketid = socket.id
                 console.log(socket.data.info)
                 const clientsInRoom = io.sockets.adapter.rooms.get(`${response.roomId}`);
@@ -43,7 +49,7 @@ io.on('connection', (socket: Socket) => {
                         if (clientId != newUserSocketid) {
                             const clientSocket = io.sockets.sockets.get(clientId);
                             if(clientSocket){
-                                const data = {id:clientId, name:clientSocket.data.info.name as string}
+                                const data = {id:clientId, name:clientSocket.data.info.name as string,DBid:clientSocket.data.info.id}
                                 ExistingUser.push(data);
                         }
                     }
@@ -70,6 +76,56 @@ io.on('connection', (socket: Socket) => {
         // Loop through the rooms the user was in
         socket.broadcast.emit("UserLeft",{socketId:socket.id})
     });
+    socket.on('ForwardAdmin', (data:{admin:string,data:{sender:string}}) => {
+        // Loop through the rooms the user was in
+        const adminSocket = io.sockets.sockets.get(data.admin);
+        adminSocket?.emit("ReqRoomJoinFresh",{sender:data.data.sender})
+    });
+
+    socket.on("ReqRoomJoinFresh",(data:{receiver:string})=>{
+        // send a join request to user 
+        console.log("working here",data)
+        if(!data?.receiver) return;
+        console.log("working here")
+        const receiverSocket = io.sockets.sockets.get(data.receiver);
+        if(receiverSocket) receiverSocket.emit("ReqRoomJoinFresh",{sender:socket.id});
+    })
+
+    socket.on("ResRoomJoinFresh",async (data:{sender:string,accept:boolean})=>{
+        try{
+            // create room and send token to both 
+            const senderSocket = io.sockets.sockets.get(data.sender);
+            const roomName = v4()
+            const senderToken = await GetRoomToken(roomName,senderSocket?.data.info.name);
+            const receiverToken = await GetRoomToken(roomName,socket?.data.info.name);
+            console.clear();
+            console.log(senderSocket?.data.info.name)
+            console.log(socket?.data.info.name)
+            if(data.accept){
+                // create room 
+                // senderSocket?.emit("ResRoomJoinFresh",{message:`${socket.data.info.name} has accepted the request`})
+                senderSocket?.emit("JoinMeetAccept",{
+                    isAdmin:true,
+                    AdminSocketId:senderSocket.id,
+                    RoomName:roomName,
+                    MeetToken:senderToken,
+                    type:MeetType.private
+                } as {isAdmin:boolean,AdminSocketId:string,RoomName:string,MeetToken:string,type:MeetType})
+                socket?.emit("JoinMeetAccept",{
+                    isAdmin:true,
+                    AdminSocketId:socket.id,
+                    RoomName:roomName,
+                    MeetToken:receiverToken,
+                    type:MeetType.private
+                } as {isAdmin:boolean,AdminSocketId:string,RoomName:string,MeetToken:string,type:MeetType})
+                console.log("room token create",receiverToken,senderToken)
+        }else{
+            senderSocket?.emit("ResRoomJoinFresh",{message:`${socket.data.info.name} has rejected the request`})
+        }
+    }catch(e){
+        console.log("some error occured while creating room token")
+    }
+    })
 });
 
 server.listen(8000, () => {
@@ -77,18 +133,18 @@ server.listen(8000, () => {
 });
 
 
-setInterval(()=>{
-    console.clear();
-    let ExistingUser:{id:string,name:string}[] = []
-    const clientsInRoom = io.sockets.adapter.rooms.get('1');
-    if (clientsInRoom) {    
-        clientsInRoom.forEach((clientId: string) => {
-            const clientSocket = io.sockets.sockets.get(clientId);
-            if(clientSocket){
-                const data = {id:clientId, name:clientSocket.data.info.name as string}
-                ExistingUser.push(data);
-            }
-        });
-    }
-    console.log("old users",ExistingUser)
-},2000)
+// setInterval(()=>{
+//     console.clear();
+//     let ExistingUser:{id:string,name:string}[] = []
+//     const clientsInRoom = io.sockets.adapter.rooms.get('1');
+//     if (clientsInRoom) {    
+//         clientsInRoom.forEach((clientId: string) => {
+//             const clientSocket = io.sockets.sockets.get(clientId);
+//             if(clientSocket){
+//                 const data = {id:clientId, name:clientSocket.data.info.name as string}
+//                 ExistingUser.push(data);
+//             }
+//         });
+//     }
+//     console.log("old users",ExistingUser)
+// },2000)

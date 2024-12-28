@@ -39,11 +39,11 @@ export default async function RootLayout({
         </svg>
         </button>
 
-        <aside id="default-sidebar" className="chaning-background fixed top-0 left-0 z-40 w-72 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
+        <aside id="default-sidebar" className=" chaning-background fixed top-0 left-0 z-40 w-72 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
             <div className="h-full px-3 py-4 overflow-y-auto bg-transparent">
                 <span  className="flex items-center ps-2.5 mb-5">
                     <Image src="/icon.png" width={40} height={40}  alt="Flowbite Logo" />
-                <   span className="self-center text-xl mt-5 mx-2 font-semibold whitespace-nowrap text-white">Lemon Town</span>
+                <   span className="self-center text-xl mt-5 mx-2 font-semibold whitespace-nowrap ">Lemon Town</span>
                 </span>
                 <ul className="space-y-2 font-medium">
                     {links.map((e,i) => (

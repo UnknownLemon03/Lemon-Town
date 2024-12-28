@@ -3,6 +3,7 @@ import { MainPlayer } from "./MainPlayer";
 import { Player } from "./Player";
 import { getSocket } from "./Socket";
 import { number } from "zod";
+import { Meet, UserChat } from "./SFU";
 
 
 export class SidePlayer extends Player {
@@ -12,12 +13,15 @@ export class SidePlayer extends Player {
     movementStack:{x:number,y:number}[] = [];
     playerName:string;
     nameText: Phaser.GameObjects.Text;
-    constructor(scene:Scene, x:number, y:number,socketID:string,PlayerIconId:number,name:string) {
+    DBid:number;
+    constructor(scene:Scene, x:number, y:number,socketID:string,PlayerIconId:number,name:string,id:number) {
         super(scene, x, y,PlayerIconId);
         this.currX = x;  
         this.currY = y;   
         this.socketID = socketID
         this.playerName = name
+        this.DBid = id;
+        console.log(this.playerName,this.DBid)
         this.nameText = scene.add.text(x, y - 30, this.playerName, {
             font: '18px nunito',
             fontSize:"2px",
@@ -108,8 +112,8 @@ export class SidePlayer extends Player {
 export class AllSidePlayers {
     static Players:Partial<{[key:string]:SidePlayer}> = {}
 
-    static AddPlayer(sence:any,id:string,loc:{x:number,y:number,PlayerIconId:number,name:string}){
-        const player = new SidePlayer(sence,loc.x,loc.y,id,loc.PlayerIconId,loc.name);
+    static AddPlayer(sence:any,id:string,loc:{x:number,y:number,PlayerIconId:number,name:string,DBid:number}){
+        const player = new SidePlayer(sence,loc.x,loc.y,id,loc.PlayerIconId,loc.name,loc.DBid);
         AllSidePlayers.Players[id] = player;
         sence.subPlayerGroup.add(AllSidePlayers.Players[id])
     }
@@ -121,9 +125,9 @@ export class AllSidePlayers {
             console.log(e)
         }
     }
-    static CreatePlayers(sence:Scene,data:{id:string,x:number,y:number,PlayerIconId:number,name:string}[]){
+    static CreatePlayers(sence:Scene,data:{id:string,x:number,y:number,PlayerIconId:number,name:string,DBid:number}[]){
         data.forEach((e)=>{
-            AllSidePlayers.AddPlayer(sence,e.id,{x:e.x,y:e.y,PlayerIconId:e.PlayerIconId,name:e.name})
+            AllSidePlayers.AddPlayer(sence,e.id,{x:e.x,y:e.y,PlayerIconId:e.PlayerIconId,name:e.name,DBid:e.DBid})
         })
     }
     static RemovePlayer(scene:Scene,id:string){

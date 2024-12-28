@@ -151,8 +151,8 @@ export class Town extends Scene
             AllSidePlayers.CreatePlayers(this,ExistingPlayers)
         });
         io.on('NewPlayer', (data) => {
-            const {id,x,y,PlayerIconId,name} = data;
-            AllSidePlayers.AddPlayer(this,id,{x,y,PlayerIconId,name});
+            const {id,x,y,PlayerIconId,name,DBid} = data;
+            AllSidePlayers.AddPlayer(this,id,{x,y,PlayerIconId,name,DBid});
         });
         io.on("UserNewLocation",(data)=>{
             AllSidePlayers.UpdatePlayer(this,data.id,{x:data.x,y:data.y})
@@ -172,15 +172,19 @@ export class Town extends Scene
    
     update(time: number, delta: number): void {
         this.mainPlayer!.update();
+        const nearDistance = 70;
         for(let i = 0 ; i < this.subPlayerGroup.getChildren().length;i++){
             const player:SidePlayer = this.subPlayerGroup.getChildren()[i]
             player.update(player.PlayerIconId);
-            if(Math.abs(this.mainPlayer!.x - player.x) < 50 && Math.abs(this.mainPlayer!.y-player.y) < 50)
-                MainPlayer.AddPlayer(player.socketID);
-            else
-                MainPlayer.RemovePlayer(player.socketID)
+            const isNear = Math.abs(this.mainPlayer!.x - player.x) < nearDistance && Math.abs(this.mainPlayer!.y-player.y) < nearDistance
+            if(isNear && !MainPlayer.NearPlayer[player.DBid])
+                MainPlayer.AddPlayer(player.DBid,player.playerName);
+            else if(!isNear && MainPlayer.NearPlayer[player.DBid]) {
+                MainPlayer.RemovePlayer(player.DBid)
+            }
             
         }
+
     }    
    
     

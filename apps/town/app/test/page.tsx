@@ -1,8 +1,10 @@
 'use server'
 import { SignUp } from '@/backend/database';
 import Chat from '@/components/meet/Chat';
+import GroupCall from '@/components/meet/GroupCall';
 import TownBar from '@/components/meet/TownBar';
 import React from 'react'
+import Loading from '../loading';
 
 export default async function page() {
   // const mail = ['test','lemon','apple'];
@@ -13,7 +15,7 @@ export default async function page() {
   // }
   return <>
   {/* <div className='h-full w-full flex justify-center items-center'> */}
-    <TownBar/>
+   <Loading/>
   {/* </div> */}
   </>
 } 

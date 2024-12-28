@@ -1,9 +1,9 @@
 import { io, Socket } from "socket.io-client";
-import { redirect } from "next/navigation";
-import toast from "react-hot-toast";
-import { UNABLE_TO_FIND_POSTINSTALL_TRIGGER_JSON_SCHEMA_ERROR } from "@prisma/client/scripts/postinstall.js";
-import exp from "constants";
 import { Dispatch } from "react";
+import { disconnectSocket } from "./Socket";
+import { MeetDataType, MeetType } from "@/backend/client";
+import AskPermission from "../meet/Permission";
+import toast from "react-hot-toast";
 
 
 
@@ -22,10 +22,9 @@ export async function ConnectSoketSFU({room,Auth,name}:{room:number,Auth:string,
             callback({...userData})
             res(socket);
         })
-        socket.on("OldUser",(data:{users:{id:string,name:string}[]})=>{
-       
+        socket.on("OldUser",(data:{users:{id:string,name:string,DBid:number}[]})=>{
             data.users.forEach(e=>{
-                UserChat.AddUser({socketId:e.id,name:e.name})
+                UserChat.AddUser({socketId:e.id,name:e.name,DBid:e.DBid})
             })
             UserChat.update();
             console.log("existing users",data)
@@ -37,6 +36,7 @@ export async function ConnectSoketSFU({room,Auth,name}:{room:number,Auth:string,
             // toast.success("You are existing Town")
             // UserChat.clear();
             // return redirect("/dashboard/towns")
+            disconnectSocket();
         })
         socket.on("UserLeft",(data:{socketId:string})=>{
             console.log("------------------user left")
@@ -44,14 +44,35 @@ export async function ConnectSoketSFU({room,Auth,name}:{room:number,Auth:string,
             UserChat.update();
             console.log(UserChat.Users)
         })
-        socket.on("NewUser",(data:{id:string,name:string})=>{
-            UserChat.AddUser({name:data.name,socketId:data.id})
+        socket.on("NewUser",(data:{id:string,name:string,DBid:number})=>{
+            console.log(data)
+            UserChat.AddUser({name:data.name,socketId:data.id,DBid:data.DBid})
             UserChat.update();
         })
         socket.on("message",(data:{message:string,socketId:string})=>{
             UserChat.AddChats(data)
-            UserChat.update();
+            UserChat.update(); 
             console.log("new meassage")
+        })
+        socket.on("JoinMeetAccept",(data:{isAdmin:boolean,AdminSocketId:string,RoomName:string,MeetToken:string,type:MeetType})=>{
+            Meet.exitMeet();
+            Meet.setMeet(data);
+            console.log("data set")
+        })
+        socket.on("JoinMeetReject",(data:{isAdmin:boolean,AdminSocketId:string,RoomName:string,MeetToken:string,type:MeetType})=>{
+            // you have been rejected
+        })
+        socket.on("ReqRoomJoinFresh",(data:{sender:string})=>{
+            if(Meet.InMeeting && !Meet.MeetData?.isAdmin){
+    
+            }else{
+                // not in meeting , then ask for meet
+                Meet.receiveMeetReq({reqSocketId:data.sender});
+                console.log("existing users",UserChat.UserIdMap)
+            }
+        })
+        socket.on("ResRoomJoinFresh",(data:{message:string})=>{
+           toast.error(data.message)
         })
     })
 }   
@@ -76,8 +97,10 @@ export function send(){
 export class UserChat{
     static Users:{[id:string]:{name:string,count:number,messages:{other:boolean,meassage:string}[]}} = {}
     static Subscribers:any = []
-    static AddUser(data:{name:string,socketId:string}){
+    static UserIdMap:{[id:number]:string} = {}// id:socketid
+    static AddUser(data:{name:string,socketId:string,DBid:number}){
         UserChat.Users[data.socketId] = {name:data.name,count:0,messages:[]}
+        UserChat.UserIdMap[data.DBid] = data.socketId
     }
     static GetChats(id:string){
         return UserChat.Users[id]?.messages ?? [];
@@ -107,5 +130,57 @@ export class UserChat{
     }
     static clear(){
         UserChat.Users = {}
+    }
+}
+
+
+
+export class Meet{
+    static InMeeting:boolean = false;
+    static MeetData:MeetDataType;
+    static MeetSub:Dispatch<any>[] = [];
+
+    static updateSubs(){
+        const data = Meet.MeetData ? {...Meet.MeetData} : null;
+        Meet.MeetSub.forEach(e=>e(data))
+    }
+
+    static setMeet(data:{isAdmin:boolean,AdminSocketId:string,RoomName:string,MeetToken:string,type:MeetType}){
+        Meet.exitMeet();
+        Meet.MeetData = data;
+        Meet.updateSubs();
+        console.log(Meet.MeetData)
+    }
+    static exitMeet(){
+        Meet.InMeeting = false;
+        Meet.MeetData = null;
+        Meet.updateSubs();
+    }
+    static sendMeetReq({id}:{id:number}){
+        getSocketSFU().emit("ReqRoomJoinFresh",{
+            receiver:UserChat.UserIdMap[id]
+        })
+        console.log("sending request ot ",UserChat.UserIdMap,id);
+    }
+    static receiveMeetReq({reqSocketId}:{reqSocketId:string}){
+        const name = UserChat.Users[reqSocketId].name
+        console.log("working request meeting")
+        function onAccept(){
+            getSocketSFU().emit("ResRoomJoinFresh",{
+                sender:reqSocketId,
+                accept:true
+            })
+        }
+        function onReject(){
+            getSocketSFU().emit("ResRoomJoinFresh",{
+                sender:reqSocketId,
+                accept:false
+            })
+        }
+        const timeOutId = setTimeout(onReject,10500)
+        function cancelTimeout(){
+            clearTimeout(timeOutId);
+        }
+        return AskPermission({name , message:`${name} is Requesting for meet`,onAccept,onReject,cancelTimeout});
     }
 }
