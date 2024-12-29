@@ -1,7 +1,7 @@
 'use client'
 import Image from 'next/image';
 import React, { useEffect, useRef, useState } from 'react'
-import { GetUserData, UserChat } from '../game/SFU';
+import { GetUserData, Meet, UserChat } from '../game/SFU';
 import { MainPlayer } from '../game/MainPlayer';
 
 export default function Chat() {

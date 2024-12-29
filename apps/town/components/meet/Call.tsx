@@ -1,6 +1,6 @@
 'use client'
 import Image from 'next/image'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import AskPermission from './Permission';
 import { MainPlayer } from '../game/MainPlayer';
 import VideoCall from './VideoCall';
@@ -26,7 +26,6 @@ export default function Call() {
         id = setTimeout(()=>{
             setHide(false);
         },200)
-        console.log("near player",Object.keys(nearPlayer))
     }
     function onHoverOut(){  
         clearTimeout(id)
@@ -37,7 +36,7 @@ export default function Call() {
     }
   return (
     <>
-        <div onMouseOver={onHover} onMouseLeave={onHoverOut}>
+        <div onMouseOver={onHover} onBlur={onHoverOut} onMouseLeave={onHoverOut}>
           <div className='absolute bottom-[10.5%] left-[45%]' >
                 <div
                     className={`transition-all duration-300 transform ${
@@ -47,7 +46,7 @@ export default function Call() {
                     
                         
                         {Object.keys(nearPlayer).map(e=><span
-                            onClick={()=>{Meet.sendMeetReq({id:parseInt(e)});setHide(e=>true)}}
+                            onClick={()=>{Meet.sendMeetReq({id:parseInt(e)});setHide(e=>true);onHoverOut()}}
                             className='bg-white block my-1 text-xl py-2 px-14 rounded-lg shadow-lg'
                             key={e}
                             >
@@ -59,7 +58,7 @@ export default function Call() {
             <div >
                 <Image src={"/call.png"} width={50} height={50} alt="Chat" />
             </div>
-            {meetData && <VideoCall MeetingToken={meetData.MeetToken} onDisconnected={()=>{Meet.exitMeet()}} />}
+            {meetData && <VideoCall MeetingToken={meetData.MeetToken} onDisconnected={()=>{Meet.exitMeet();onHoverOut()}} />}
         </div>
     </>
   )

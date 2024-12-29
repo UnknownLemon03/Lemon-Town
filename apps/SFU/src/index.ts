@@ -76,11 +76,35 @@ io.on('connection', (socket: Socket) => {
         // Loop through the rooms the user was in
         socket.broadcast.emit("UserLeft",{socketId:socket.id})
     });
-    socket.on('ForwardAdmin', (data:{admin:string,data:{sender:string}}) => {
+    // getSocketSFU().emit("Forward",{to:Meet.MeetData?.AdminSocketId,event:"ResRoomJoinExist",data})
+    socket.on('Forward', (data:{to:string,event:string,data:{sender:string}}) => {
         // Loop through the rooms the user was in
-        const adminSocket = io.sockets.sockets.get(data.admin);
-        adminSocket?.emit("ReqRoomJoinFresh",{sender:data.data.sender})
+        console.log("data forwarding")
+        const to = io.sockets.sockets.get(data.to); // this is admin
+        switch(data.event){
+            case "ReqRoomJoinExist":
+                to?.emit("ReqRoomJoinExist",data.data)
+                break;
+        }
     });
+
+    socket.on("ResRoomJoinExist",async(data:{sender:string,accept:boolean,meetToken:string,admin:string})=>{
+        const receiver = io.sockets.sockets.get(data.sender);
+        const adminSocket = io.sockets.sockets.get(data.admin)
+        if(data.accept){
+            //creat tokem
+            console.clear();
+            console.log("existing meeting request has accpeted");
+            const roomdata = jwt.decode(data.meetToken) as {video:{room:string}}|null
+            if(roomdata?.video.room){
+                const token = await GetRoomToken(roomdata.video.room,receiver?.data.info.name,false);
+                receiver?.emit("ResRoomJoinExist",{message:"Your Request have been Accepted",name:adminSocket?.data.info.name})
+                receiver?.emit("JoinMeetAccept",{isAdmin:false,AdminSocketId:data.admin,RoomName:roomdata.video.room,MeetToken:token,type:MeetType.private})
+            }
+        }else{
+            receiver?.emit("ResRoomJoinExist",{message:"Your Request have been rejected",name:adminSocket?.data.info.name})
+        }
+    })
 
     socket.on("ReqRoomJoinFresh",(data:{receiver:string})=>{
         // send a join request to user 
@@ -96,12 +120,12 @@ io.on('connection', (socket: Socket) => {
             // create room and send token to both 
             const senderSocket = io.sockets.sockets.get(data.sender);
             const roomName = v4()
-            const senderToken = await GetRoomToken(roomName,senderSocket?.data.info.name);
-            const receiverToken = await GetRoomToken(roomName,socket?.data.info.name);
+            const senderToken = await GetRoomToken(roomName,senderSocket?.data.info.name,true);
+            const receiverToken = await GetRoomToken(roomName,socket?.data.info.name,false);
             console.clear();
             console.log(senderSocket?.data.info.name)
             console.log(socket?.data.info.name)
-            if(data.accept){
+            if(data.accept && senderSocket){
                 // create room 
                 // senderSocket?.emit("ResRoomJoinFresh",{message:`${socket.data.info.name} has accepted the request`})
                 senderSocket?.emit("JoinMeetAccept",{
@@ -112,8 +136,8 @@ io.on('connection', (socket: Socket) => {
                     type:MeetType.private
                 } as {isAdmin:boolean,AdminSocketId:string,RoomName:string,MeetToken:string,type:MeetType})
                 socket?.emit("JoinMeetAccept",{
-                    isAdmin:true,
-                    AdminSocketId:socket.id,
+                    isAdmin:false,
+                    AdminSocketId:senderSocket.id,
                     RoomName:roomName,
                     MeetToken:receiverToken,
                     type:MeetType.private

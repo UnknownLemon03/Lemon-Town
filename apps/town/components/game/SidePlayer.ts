@@ -21,7 +21,6 @@ export class SidePlayer extends Player {
         this.socketID = socketID
         this.playerName = name
         this.DBid = id;
-        console.log(this.playerName,this.DBid)
         this.nameText = scene.add.text(x, y - 30, this.playerName, {
             font: '18px nunito',
             fontSize:"2px",
@@ -60,9 +59,8 @@ export class SidePlayer extends Player {
  
         const directionX = x - this.x;
         const directionY = y - this.y;
-        if (Math.sqrt(Math.pow(this.x - this.currX, 2) + Math.pow(this.y - this.currY, 2))<3) {
+        if (Math.sqrt(Math.pow(this.x - this.currX, 2) + Math.pow(this.y - this.currY, 2))<2) {
             this.setVelocity(0, 0);
-
             // Play stop animation based on the last direction of movement
             if (this.lastDirection === 'right') {
                 this.anims.play(`stop_right_${playerIconid}`, true);
@@ -78,7 +76,7 @@ export class SidePlayer extends Player {
             const magnitude = Math.sqrt(directionX * directionX + directionY * directionY);
             const normalizedDirectionX = directionX / magnitude;
             const normalizedDirectionY = directionY / magnitude;
-
+            
             // Set the velocity to move the player towards the target coordinates
             this.setVelocity(normalizedDirectionX * this.speed,normalizedDirectionY * this.speed)
             

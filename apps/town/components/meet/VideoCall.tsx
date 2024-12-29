@@ -1,25 +1,26 @@
 'use client';
 
 import {
+  CarouselLayout,
   Chat,
   ControlBar,
   GridLayout,
   LiveKitRoom,
   ParticipantTile,
   RoomAudioRenderer,
+  useParticipants,
+  useRemoteParticipants,
   useTracks,
 } from '@livekit/components-react';
 
 import '@livekit/components-styles';
 
 import { useEffect, useRef, useState } from 'react';
-import { Track } from 'livekit-client';
-import { Display } from 'phaser';
-import { LoaderIcon } from 'react-hot-toast';
-import Loading from '@/app/loading';
-export default function VideoCall({onDisconnected,MeetingToken}:{onDisconnected:()=>undefined,MeetingToken:string}) {
-  
+import { Room, Track } from 'livekit-client';
 
+export default function VideoCall({onDisconnected,MeetingToken}:{onDisconnected:()=>undefined,MeetingToken:string}) {
+    Room
+  
   return (
     <LiveKitRoom
       video={true}
@@ -32,19 +33,20 @@ export default function VideoCall({onDisconnected,MeetingToken}:{onDisconnected:
       style={{ height: '100vh',position: 'absolute' ,top:"0",left:"0"}}
     >
       {/* Your custom component with basic video conferencing functionality. */}
-      <MyVideoConference />
+      <MyVideoConference onDisconnected={onDisconnected} />
       {/* The RoomAudioRenderer takes care of room-wide audio for you. */}
       <RoomAudioRenderer />
       {/* Controls for the user to start/stop audio, video, and screen
       share tracks and to leave the room. */}
-      <ControlBar />
+        <ControlBar/>
     </LiveKitRoom>
   );
 }
 
-function MyVideoConference() {
+function MyVideoConference({onDisconnected}:{onDisconnected:()=>undefined}) {
   // `useTracks` returns all camera and screen share tracks. If a user
   // joins without a published camera track, a placeholder track is returned.
+  const [join,setJoin] = useState(false);
   const tracks = useTracks(
     [
       { source: Track.Source.Camera, withPlaceholder: true },
@@ -52,6 +54,15 @@ function MyVideoConference() {
     ],
     { onlySubscribed: false },
   );
+  const participant = useRemoteParticipants()  
+  
+  useEffect(()=>{
+    if(participant.length == 0 && join) onDisconnected();
+    else if(participant.length > 0 && !join) setJoin(true);
+  },[participant])
+
+  
+
   return (
     //@ts-ignore
     <GridLayout tracks={tracks} style={{ height: 'calc(100vh - var(--lk-control-bar-height))' }}>

@@ -4,7 +4,7 @@ import { disconnectSocket } from "./Socket";
 import { MeetDataType, MeetType } from "@/backend/client";
 import AskPermission from "../meet/Permission";
 import toast from "react-hot-toast";
-
+import jwt from "jsonwebtoken"
 
 
 let socket:Socket;
@@ -54,25 +54,40 @@ export async function ConnectSoketSFU({room,Auth,name}:{room:number,Auth:string,
             UserChat.update(); 
             console.log("new meassage")
         })
+
+
         socket.on("JoinMeetAccept",(data:{isAdmin:boolean,AdminSocketId:string,RoomName:string,MeetToken:string,type:MeetType})=>{
-            Meet.exitMeet();
             Meet.setMeet(data);
-            console.log("data set")
         })
         socket.on("JoinMeetReject",(data:{isAdmin:boolean,AdminSocketId:string,RoomName:string,MeetToken:string,type:MeetType})=>{
             // you have been rejected
         })
         socket.on("ReqRoomJoinFresh",(data:{sender:string})=>{
-            if(Meet.InMeeting && !Meet.MeetData?.isAdmin){
-    
+            if(Meet.InMeeting && Meet.MeetData){
+                console.log("I'm in meeting ",Meet.MeetData)
+                const roomdata = jwt.decode(Meet.MeetData.MeetToken) as {video:{roomAdmin:boolean}} | null
+                if(roomdata && roomdata.video.roomAdmin){
+                    // we are admin
+                    console.log(" asking admin ",Meet.MeetData)
+                    return Meet.receiveMeetReqExist({reqSocketId:data.sender})
+                }else{
+                    console.log("forwarding message ",Meet.MeetData)
+                    // forward this to admin
+                    getSocketSFU().emit("Forward",{to:Meet.MeetData?.AdminSocketId,event:"ReqRoomJoinExist",data})
+                }
             }else{
-                // not in meeting , then ask for meet
                 Meet.receiveMeetReq({reqSocketId:data.sender});
-                console.log("existing users",UserChat.UserIdMap)
+                console.log("I'm not in meeting ",Meet.MeetData)
             }
         })
+        socket.on("ReqRoomJoinExist",(data:{sender:string})=>{
+            return Meet.receiveMeetReqExist({reqSocketId:data.sender})
+        })
         socket.on("ResRoomJoinFresh",(data:{message:string})=>{
-           toast.error(data.message)
+           toast.dismiss(data.message)
+        })
+        socket.on("ResRoomJoinExist",(data:{message:string})=>{
+           toast.success(data.message)
         })
     })
 }   
@@ -146,10 +161,9 @@ export class Meet{
     }
 
     static setMeet(data:{isAdmin:boolean,AdminSocketId:string,RoomName:string,MeetToken:string,type:MeetType}){
-        Meet.exitMeet();
         Meet.MeetData = data;
+        Meet.InMeeting = true;
         Meet.updateSubs();
-        console.log(Meet.MeetData)
     }
     static exitMeet(){
         Meet.InMeeting = false;
@@ -160,11 +174,9 @@ export class Meet{
         getSocketSFU().emit("ReqRoomJoinFresh",{
             receiver:UserChat.UserIdMap[id]
         })
-        console.log("sending request ot ",UserChat.UserIdMap,id);
     }
     static receiveMeetReq({reqSocketId}:{reqSocketId:string}){
         const name = UserChat.Users[reqSocketId].name
-        console.log("working request meeting")
         function onAccept(){
             getSocketSFU().emit("ResRoomJoinFresh",{
                 sender:reqSocketId,
@@ -175,6 +187,30 @@ export class Meet{
             getSocketSFU().emit("ResRoomJoinFresh",{
                 sender:reqSocketId,
                 accept:false
+            })
+        }
+        const timeOutId = setTimeout(onReject,10500)
+        function cancelTimeout(){
+            clearTimeout(timeOutId);
+        }
+        return AskPermission({name , message:`${name} is Requesting for meet`,onAccept,onReject,cancelTimeout});
+    }
+    static receiveMeetReqExist({reqSocketId}:{reqSocketId:string}){
+        const name = UserChat.Users[reqSocketId].name
+        console.log("working request meeting")
+        function onAccept(){
+            getSocketSFU().emit("ResRoomJoinExist",{
+                sender:reqSocketId,
+                accept:true,
+                meetToken:Meet.MeetData?.MeetToken,
+                admin:Meet.MeetData?.AdminSocketId
+            })
+        }
+        function onReject(){
+            getSocketSFU().emit("ResRoomJoinExist",{
+                sender:reqSocketId,
+                accept:false,
+                meetToken:Meet.MeetData?.MeetToken
             })
         }
         const timeOutId = setTimeout(onReject,10500)

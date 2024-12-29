@@ -84,7 +84,6 @@ export class MainPlayer extends Player {
                 io.emit('UpdatePlayerLocation', { roomName: MainPlayer.RoomID, userData: { x: Math.floor(this.x), y: Math.floor(this.y) } });
             this.oldx = this.x;
             this.oldy = this.y;
-            console.log("Updaing main player",AllSidePlayers.Players)
         }
     }
 
