@@ -26,38 +26,45 @@ model user {
 model roles {
   userid Int @unique()
   role String 
-  user user  @relation(fields: [userid], references: [id])
+  user user  @relation(fields: [userid], references: [id],onDelete: Cascade)
 }
 
 model room{
   id Int @id @default(autoincrement())
   name String
-  mapid Int
-  map map @relation(fields: [mapid],references: [id])
   roomaccess roomaccess[]
   roomcontrol roomcontrol[]
+  roommaps roommaps?
 }
 
 model roomcontrol{
   userid Int 
   roomid Int
-  user user @relation(fields: [userid], references: [id])
-  room room @relation(fields: [roomid], references: [id])
+  user user @relation(fields: [userid], references: [id],onDelete: Cascade)
+  room room @relation(fields: [roomid], references: [id],onDelete: Cascade)
   @@id([userid,roomid])
 }
 
 model roomaccess{
   userid Int
   roomid Int
-  room room @relation(fields: [roomid], references: [id])
-  user user @relation(fields: [userid], references: [id])
+  room room @relation(fields: [roomid], references: [id],onDelete: Cascade)
+  user user @relation(fields: [userid], references: [id],onDelete: Cascade)
   @@id([userid,roomid])
 }
 
+model roommaps{
+  roomid Int @unique
+  mapid String 
+  @@id([roomid,mapid]) 
+  map map @relation(fields: [mapid], references: [id],onDelete: Cascade)
+  room room @relation(fields: [roomid], references: [id],onDelete: Cascade)
+}
+
 model map{
-  id Int @id @default(autoincrement())
-  name String
+  id String @id 
+  name String @unique
   start Int @default(-1)
   end Int @default(-1)
-  room room[]
+  roommaps roommaps[]
 }

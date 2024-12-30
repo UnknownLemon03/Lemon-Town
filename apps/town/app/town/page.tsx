@@ -5,6 +5,7 @@ import Town from "./Town"
 import { parse } from "path";
 import { checkRoomAccess, isLogin } from "@/backend/Auth";
 import { log } from "console";
+import { GetMapUrlRoom } from "@/backend/cloude";
 export default async function page({searchParams}:{searchParams:{roomid:string}}) {
   const login = await isLogin();
   if(!login) return redirect("/login")
@@ -14,9 +15,10 @@ export default async function page({searchParams}:{searchParams:{roomid:string}}
   if(isNaN(id)) return redirect("/dashboard/towns")
   const access = await checkRoomAccess(id,login.id);
   if(!access) return redirect("/dashboard");
+  const mapurl = await GetMapUrlRoom(id);
   return (<>
   <div className="chaning-background">
-    <Town roomid={id} name={login.name}/>
+    <Town roomid={id} name={login.name} mapurl={mapurl.url}/>
   </div>
 </>
   )

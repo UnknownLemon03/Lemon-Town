@@ -240,6 +240,7 @@ export async function ToogleUserFromRoom({roomid,userid}:{roomid:number,userid:n
             })
             msz = "User added successfully"
         }
+        console.log(msz)
         return {success:true, error:"",data:msz}
     }catch(e){
         if(e instanceof Error){
@@ -306,7 +307,7 @@ export async function GetAllUsers({limit,skip}:{limit?:number,skip?:number}):Pro
         return {error:"Error Seraching User",success:false,data:[]}
     }
 }
-export async function GetAllMap({id}:{id?:number}):Promise<{error:string,success:boolean,data:MapTypeDB[]}>{
+export async function GetAllMap({id}:{id?:string}):Promise<{error:string,success:boolean,data:MapTypeDB[]}>{
     try{
         let req:MapTypeDB[] = [];
         if(id){
@@ -328,12 +329,12 @@ export async function GetAllMap({id}:{id?:number}):Promise<{error:string,success
         return {error:"Error Seraching User",success:false,data:[]}
     }
 }
-export async function AddMapDB({name,start,end}:{name:string,start:number,end:number}):Promise<{error:string,success:boolean}>{
+export async function AddMapDB({id,name,start,end}:{id:string,name:string,start:number,end:number}):Promise<{error:string,success:boolean}>{
     try{
  
         const temp = await prisma.map.create({
             data:{
-                name,start,end
+                id,name,start,end
             }
         })
         return {success:true, error:""}
@@ -344,7 +345,7 @@ export async function AddMapDB({name,start,end}:{name:string,start:number,end:nu
         return {error:"Error Seraching User",success:false}
     }
 }
-export async function DeleteMapDB({id}:{id:number}):Promise<{error:string,success:boolean}>{
+export async function DeleteMapDB({id}:{id:string}):Promise<{error:string,success:boolean}>{
     try{
  
         const temp = await prisma.map.delete({
@@ -498,8 +499,8 @@ export async function GetRole({id}:{id:number}):Promise<{error:string,success:bo
 }
 export async function GetUserControlRooms({id}:{id:number}):Promise<{error:string,success:boolean,data:{
     id: number;
-    name: string;
-    mapid: number;
+    name: string,
+    mapId:string
 }[]}>{
     try{
         const data = await prisma.roomcontrol.findMany({
@@ -507,10 +508,21 @@ export async function GetUserControlRooms({id}:{id:number}):Promise<{error:strin
                 userid:id
             },
             include:{
-                room:true
+               room:{
+                    include:{
+                        roommaps:{
+                            include:{
+                                map:true
+                            }
+                        }
+                    }
+               }
             }
         })
-        const rooms = data.map(e=>e.room)
+
+        const rooms = data.map(e=>{
+            return {id:e.room.id,name:e.room.name,mapId: e.room.roommaps?.mapid ?? "-1"}
+        })
         return {success:true, error:"",data:rooms}
     }catch(e){
         if(e instanceof Error){
@@ -521,3 +533,46 @@ export async function GetUserControlRooms({id}:{id:number}):Promise<{error:strin
 }
 
 
+export async function ChangeTownNameDB({id,name}:{id:number,name:string}):Promise<{error:string,success:boolean}>{
+    try{
+        const data = await prisma.room.update({
+            where:{
+                id
+            },
+            data:{
+                name
+            }
+        })
+        return {success:true, error:""}
+    }catch(e){
+        if(e instanceof Error){
+            return {error:`${e.name}-${e.message}`,success:false}
+        }
+        return {error:"Error Seraching User",success:false}
+    }
+}
+
+export async function ChangeTownMapDB({mapid,roomid}:{roomid:number,mapid:string}):Promise<{error:string,success:boolean}>{
+    try{
+        if(mapid == "-1"){
+            await prisma.roommaps.delete({
+                where: { roomid},
+            })
+            console.clear();
+            console.log("detleing")
+        }else{
+            await prisma.roommaps.upsert({
+                where: { roomid_mapid: { roomid, mapid } }, // Use composite key
+                update: { mapid }, // Update mapid if entry exists
+                create: { roomid, mapid }, // Create new entry if it doesn't
+            })
+            console.log("updating")
+        }
+        return {success:true, error:""}
+    }catch(e){
+        if(e instanceof Error){
+            return {error:`${e.name}-${e.message}`,success:false}
+        }
+        return {error:"Error Seraching User",success:false}
+    }
+}

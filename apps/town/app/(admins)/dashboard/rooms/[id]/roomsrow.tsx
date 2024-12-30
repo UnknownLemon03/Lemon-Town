@@ -1,6 +1,6 @@
 'use client'
 import { RoomTypeDB } from '@/backend/datatype'
-import { AddUserToRoomServerAction, DeleteRoomServerAction } from '@/backend/serverAction'
+import { AddUserToRoomControlServerAction, AddUserToRoomServerAction, DeleteRoomServerAction } from '@/backend/serverAction'
 import Link from 'next/link'
 import React, { startTransition, useActionState, useEffect } from 'react'
 import toast from 'react-hot-toast'
@@ -12,7 +12,7 @@ type RoomsUsers= {
   name: string;
 }[]
 export default function RoomRow({data,roomid}:{data:RoomsUsers,roomid:number}) {
-  const [preStat,action] = useActionState(AddUserToRoomServerAction,{error:"",success:false,data:""});
+  const [preStat,action] = useActionState(AddUserToRoomControlServerAction,{error:"",success:false,data:""});
   useEffect(()=>{
       console.log(preStat)
       if(preStat.success == true && preStat.error == "" && preStat.data!=""){

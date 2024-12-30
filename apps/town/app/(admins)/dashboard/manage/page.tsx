@@ -1,7 +1,7 @@
 import React from 'react'
 import Link from "next/link";
 import AddNewRoom from '@/components/AddNewRoom';
-import { DeleteRoomDB, GetRoomDB, GetUserControlRooms } from '@/backend/database';
+import { DeleteRoomDB, GetAllMap, GetRoomDB, GetUserControlRooms } from '@/backend/database';
 import RoomRow from './roomsrow';
 import { isLogin, isRoomAdmin } from '@/backend/Auth';
 import { redirect } from 'next/navigation';
@@ -11,6 +11,8 @@ export default async function page() {
     const isroomadmin = await isRoomAdmin(islogin.id);
     if(!isroomadmin) redirect("/dashboard");
     const req = await GetUserControlRooms({id:islogin.id});
+
+    const {data:mapData} = await GetAllMap({})
   return (
     <>
         <h4 className="text-2xl font-bold dark:text-white mb-5">Manage Room </h4>
@@ -25,12 +27,15 @@ export default async function page() {
                             Room Name
                         </th>
                         <th scope="col" className="px-6 py-3">
+                            Town Map
+                        </th>
+                        <th scope="col" className="px-6 py-3">
                             Action
                         </th>
                     </tr>
                 </thead>
                 <tbody>
-                   <RoomRow data={req.data} />
+                   <RoomRow data={req.data} mapData={mapData}/>
                 </tbody>
             </table>
         </div>

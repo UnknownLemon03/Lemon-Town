@@ -6,13 +6,13 @@ import { useFormState } from 'react-dom'
 
 export default function AddNewRoom() {
   const Rooms = ["/map"]
-  const [maps,setMaps] = useState<{[key:string]:number}>({})
+  const [maps,setMaps] = useState<{[key:string]:string}>({})
   const [hide,setHide] = useState<Boolean>(false)
   const [preState,formAction , isPending] = useActionState(AddRoomServerAction,{error:"",success:false})
   async function getMaps(){
     const {data,success} = await GetAllMap({})
     if(success){
-      let maps:{[key:string]:number} = {}
+      let maps:{[key:string]:string} = {}
       data.forEach(e=>{
         maps[e.name] = e.id
       })
@@ -51,7 +51,8 @@ export default function AddNewRoom() {
                   <label htmlFor="mapid" className="block mb-2 text-gray-500 text-sm font-medium  dark:text-white">
                     Choose Map
                   </label>
-                    <select id="mapid" name="mapid" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    <select id="mapid" name="mapid"  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                      <option  value={-1}>Lemon Town (default)</option>
                       {Object.keys(maps).map((e,i)=><option key={i} value={maps[e]}>{e}</option>)}
                       {Object.keys(maps).length == 0 && <option disabled={true}>No map added</option>}
                   </select>

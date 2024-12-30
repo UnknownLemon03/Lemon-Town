@@ -17,10 +17,10 @@ export default async function RootLayout({
     const isroomadmin = await isRoomAdmin();
 
     if(isroomadmin){
-        links.push({name:"Manage Rooms Users",icon:"/roomusers.png",path:"/dashboard/manage"})
+        links.push({name:"Manage Towns Users",icon:"/roomusers.png",path:"/dashboard/manage"})
     }
     if(isadmin){
-        links.push({name:"Manage Rooms",icon:"/rooms.png",path:"/dashboard/rooms"})
+        links.push({name:"Manage Towns",icon:"/rooms.png",path:"/dashboard/rooms"})
         links.push({name:"Admins",icon:"/admin.png",path:"/dashboard/admins"})
         links.push({name:"Accounts",icon:"/user.png",path:"/dashboard/users"})
         links.push({name:"Maps",icon:"/map.png",path:"/dashboard/maps"})

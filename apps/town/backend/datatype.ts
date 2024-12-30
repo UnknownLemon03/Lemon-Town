@@ -2,12 +2,10 @@ import { string, z} from 'zod'
 
 export const RoomType = z.object({
     name:z.string(),
-    mapid:z.number(),
 }) 
 export const RoomTypeDB = z.object({
     id:z.number(),
     name:z.string(),
-    mapid:z.number(),
 }) 
 export const MapType = z.object({
     name:z.string(),
@@ -15,7 +13,7 @@ export const MapType = z.object({
     end:z.number(),
 }) 
 export const MapTypeDB = z.object({
-    id:z.number(),
+    id:z.string(),
     name:z.string(),
     start:z.number(),
     end:z.number(),
