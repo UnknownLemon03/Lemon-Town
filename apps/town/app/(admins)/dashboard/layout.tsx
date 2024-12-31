@@ -43,25 +43,25 @@ export default async function RootLayout({
             <div className="h-full px-3 py-4 overflow-y-auto bg-transparent">
                 <span  className="flex items-center ps-2.5 mb-5">
                     <Image src="/icon.png" width={40} height={40}  alt="Flowbite Logo" />
-                <   span className="self-center text-xl mt-5 mx-2 font-semibold whitespace-nowrap ">Lemon Town</span>
+                <   span className="self-center text-xl mt-5 mx-2 font-semibold whitespace-nowrap text-gray-100">Lemon Town</span>
                 </span>
-                <ul className="space-y-2 font-medium">
+                <ul className="space-y-2 font-medium ">
                     {links.map((e,i) => (
                         <li key={i} >  
-                            <Link href={e.path} className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                            <Link href={e.path} className="flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group hover:text-gray-900">
                             <Image
                                 src={e.icon}
                                 alt={e.name}
                                 width={50}  
                                 height={50} 
-                                className="transition duration-75 group-hover:text-gray-900 dark:group-hover:text-white"
+                                className="transition duration-75 group-hover:text-gray-900 dark:group-hover:text-gray-900"
                             />
                                 <span className="ms-3">{e.name}</span>
                             </Link>
                         </li>
                     ))}
                         <li  >  
-                            <div onClick={LogOut} className="cursor-pointer flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                            <div onClick={LogOut} className="cursor-pointer flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group hover:text-gray-900">
                             <Image
                                 src={"/logout.png"}
                                 alt={"logout"}

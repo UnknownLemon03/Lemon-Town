@@ -1,6 +1,6 @@
 'use client'
 import { SignInServerAction, SignUpServerAction } from '@/backend/serverAction';
-import { error } from 'console';
+import { error, table } from 'console';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import React, {startTransition, useActionState, useEffect, useState } from "react";
@@ -19,6 +19,18 @@ export default function AuthForm({mode}:{mode:boolean}) {
       redirect("/dashboard")
     }
   })
+  useEffect(()=>{
+    if(preStateUp.error.length == 0 && preStateUp.success && preStateUp.data){
+      toast.success(preStateUp.data)
+    }else if(preStateUp.error.length > 0 && !preStateUp.success){
+      toast.error(preStateUp.error)
+    }
+    if(preStateIn.error.length == 0 && preStateIn.success && preStateIn.data){
+      toast.success(preStateIn.data)
+    }else if(preStateIn.error.length > 0 && !preStateIn.success){
+      toast.error(preStateIn.error)
+    }
+  },[preStateUp,preStateIn])
   function handleSignUp(e:React.FormEvent<HTMLFormElement>){
     e.preventDefault();
     const form = e.currentTarget;

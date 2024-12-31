@@ -12,6 +12,8 @@ export class Town extends Scene
     groundLayer1:Phaser.Tilemaps.TilemapLayer|null;
     groundLayer2:Phaser.Tilemaps.TilemapLayer|null;
     groundLayer3:Phaser.Tilemaps.TilemapLayer|null;
+    groundLayer4:Phaser.Tilemaps.TilemapLayer|null;
+    groundLayer5:Phaser.Tilemaps.TilemapLayer|null;
     static MapLink:string
     mainPlayer:Physics.Arcade.Sprite | undefined 
     static startX:number;
@@ -23,6 +25,8 @@ export class Town extends Scene
         this.groundLayer1 = null;
         this.groundLayer2 = null;
         this.groundLayer3 = null;
+        this.groundLayer4 = null;
+        this.groundLayer5 = null;
     }
 
     preload(){
@@ -132,15 +136,21 @@ export class Town extends Scene
        const base = this.map.addTilesetImage('base', "base");
        this.groundLayer1 = this.map.createLayer('base', [assets,assets2,base], 0, 0);
        this.groundLayer2 = this.map.createLayer('upper', [assets,assets2,base], 0, 0);  
-       this.groundLayer3 = this.map.createLayer('overhead', [assets,assets2,base], 0, 0);  
+       this.groundLayer3 = this.map.createLayer('upper2', [assets,assets2,base], 0, 0);  
+       this.groundLayer4 = this.map.createLayer('overhead', [assets,assets2,base], 0, 0);  
+       this.groundLayer5 = this.map.createLayer('overhead2', [assets,assets2,base], 0, 0);  
        this.groundLayer1?.setDepth(0)
        this.groundLayer2?.setDepth(0);  
-       this.groundLayer3?.setDepth(10)
+       this.groundLayer3?.setDepth(0);  
+       this.groundLayer4?.setDepth(10)
+       this.groundLayer5?.setDepth(12)
        this.groundLayer2?.setCollisionByProperty({ collide: true });
+       this.groundLayer3?.setCollisionByProperty({ collide: true });
 
 
        this.mainPlayer = new MainPlayer(this,Math.ceil(Town.startX*32),Math.ceil(Town.startY*32))
        this.physics.add.collider(this.mainPlayer, this.groundLayer2!);
+       this.physics.add.collider(this.mainPlayer, this.groundLayer3!);
 
        // sub group for side players 
        this.subPlayerGroup = this.add.group();

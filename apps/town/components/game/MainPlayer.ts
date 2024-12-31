@@ -57,8 +57,8 @@ export class MainPlayer extends Player {
         scene.events.on('update', this.update, this);
 
         this.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
-        this.setSize(16, 16);  // Adjust to match the sprite size
-        this.setOffset(0, 16);  // Optional: Set an offset to align body with sprite
+        this.setSize(16, 12);  // Adjust to match the sprite size
+        this.setOffset(0, 20);  // Optional: Set an offset to align body with sprite
 
     }
 

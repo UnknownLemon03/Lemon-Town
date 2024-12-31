@@ -49,7 +49,7 @@ export default function SubPage() {
                         <th scope="col" className="px-6 py-3">
                             Username
                         </th>
-                        <th scope="col" className="p    x-6 py-3">
+                        <th scope="col" className="px-6 py-3">
                             Email
                         </th>
                         <th scope="col" className="px-6 py-3">

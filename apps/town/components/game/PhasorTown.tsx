@@ -11,7 +11,7 @@ import { getAuthToken } from '@/backend/Auth';
 import TownBar from '../meet/TownBar';
 import { ConnectSoketSFU, getSocketSFU } from './SFU';
 export const dynamic = 'no-catch'
-export default function PhasorTown({mapurl,roomid,name}:{mapurl:string,roomid:number,name:string}) {
+export default function PhasorTown({mapurl,roomid,name,x,y}:{mapurl:string,roomid:number,name:string,x:number,y:number}) {
     const ref = useRef<HTMLDivElement>(null);
     const[loading,setLoading] = useState(true);
     let [game, setGame] = useState<Game | null>(null);
@@ -46,8 +46,8 @@ export default function PhasorTown({mapurl,roomid,name}:{mapurl:string,roomid:nu
         MainPlayer.RoomID = roomid
         
         MainPlayer.Name = name
-        Town.startX = 35;
-        Town.startY = 27;
+        Town.startX = x;
+        Town.startY = y;
         if(!loading){
             const game = new Game({...config, parent: ref.current});
             setGame(game)

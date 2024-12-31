@@ -85,17 +85,20 @@ async function AWSGet(id:string,validity=3600):Promise<{error:string,success:boo
     }
 }
 
-export async function GetMapUrlRoom(id:number):Promise<{url:string}>{
+export async function GetMapUrlRoom(id:number):Promise<{url:string,x:number,y:number}>{
     try{
         const roomid = await prisma.roommaps.findUnique({
             where:{
                 roomid:id
+            },
+            include:{
+                map:true
             }
         })
-        if(!roomid) return {url:"/town/map.json"}
+        if(!roomid) return {url:"/town/map.json",x:40,y:77}
         const {data} = await AWSGet(roomid.mapid);
-        return {url:data}
+        return {url:data,x:roomid.map.start,y:roomid.map.end}
     }catch(e){
-        return {url:"/town/map.json"}
+        return {url:"/town/map.json",x:40,y:70}
     }
 }

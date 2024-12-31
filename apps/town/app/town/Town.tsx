@@ -12,7 +12,7 @@ const PhasorTown = dynamic(
   () => import('@/components/game/PhasorTown'),
   { ssr: false }
 );
-export default function Town({roomid,name,mapurl}:{roomid:number,name:string,mapurl:string}) {
+export default function Town({roomid,name,mapurl,x,y}:{roomid:number,name:string,mapurl:string,x:number,y:number}) {
   function handleExit(){
     UserChat.clear();
     disconnectSocketSFU();
@@ -24,7 +24,7 @@ export default function Town({roomid,name,mapurl}:{roomid:number,name:string,map
       <button onClick={handleExit} type="button" className="absolute top-14 left-14 focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-2 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
         Exit
       </button>
-      <PhasorTown mapurl={mapurl} name={name} roomid={roomid} />
+      <PhasorTown mapurl={mapurl} name={name} roomid={roomid} x={x} y={y}/>
     </div>
   </>
   )

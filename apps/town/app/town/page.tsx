@@ -18,7 +18,7 @@ export default async function page({searchParams}:{searchParams:{roomid:string}}
   const mapurl = await GetMapUrlRoom(id);
   return (<>
   <div className="chaning-background">
-    <Town roomid={id} name={login.name} mapurl={mapurl.url}/>
+    <Town roomid={id} name={login.name} mapurl={mapurl.url} x={mapurl.x} y={mapurl.y}/>
   </div>
 </>
   )

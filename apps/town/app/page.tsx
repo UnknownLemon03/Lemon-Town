@@ -71,6 +71,12 @@ export default async function Home() {
   return (
     <>
       <div className=" relative background-main flex justify-start items-center px-32 ">
+          <div className="absolute top-3 left-10">
+              <span  className="flex items-center ps-2.5 mb-5">
+                <Image src="/icon.png" width={40} height={40}  alt="Flowbite Logo" />
+                <span className="self-center text-xl mt-5 mx-2 font-semibold whitespace-nowrap text-gray-100">Lemon Town</span>
+              </span>
+          </div>
           <div className="px-14 -translate-y-24  ">
             <h2 className="text-5xl py-5  text-white font-extrabold">Your <span className="text-[#cad8ff]">Virtual Town</span></h2>
             <p className="text-white mb-5">

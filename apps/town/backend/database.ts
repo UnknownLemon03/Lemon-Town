@@ -92,9 +92,10 @@ export async function SignIn({email,password}:{email:string,password:string}):Pr
         })
         if(!req)
             return {error:"Invalid Credential",success:false,data:null}
-        bcrypt.compare(password, req.password, function(err, result) {
-            if(!result) return {error:"Invalid Credential",success:false,data:null}
-        });
+        const isMatch = await bcrypt.compare(password, req.password);
+        if(!isMatch)
+            return {error:"Invalid Credential",success:false,data:null}
+        
         return {success:true, error:"",data:req};
     }catch(e){
         if(e instanceof Error){

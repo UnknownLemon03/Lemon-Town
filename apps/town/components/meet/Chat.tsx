@@ -74,6 +74,7 @@ export default function Chat() {
                         {UserChat.Users[e].count}
                     </span>}
                     </button>)}
+                    {Object.keys(users).length == 0 && <span className='flex justify-center items-center'>No user found</span>}
                 </div>
                 </div>
                 </div>

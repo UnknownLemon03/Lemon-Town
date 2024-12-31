@@ -3,7 +3,9 @@ import { Server, Socket } from "socket.io";
 import http from 'http';
 import {  GetAuthRoom, GetRoomDB } from "./database/db";
 import jwt from "jsonwebtoken"
+import dotenv from "dotenv"
 const server = http.createServer();
+dotenv.config();
 const io = new Server(server, {
     cors: {
       origin: "*", 
