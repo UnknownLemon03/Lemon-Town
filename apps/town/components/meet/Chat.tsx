@@ -1,14 +1,13 @@
 'use client'
 import Image from 'next/image';
 import React, { useEffect, useRef, useState } from 'react'
-import { GetUserData, Meet, UserChat } from '../game/SFU';
+import { UserChat } from '../game/SFU';
 import { MainPlayer } from '../game/MainPlayer';
 
 export default function Chat() {
     const [hide,setHide] = useState<boolean>(false);
     const [users,setUsers] = useState<{[id:string]:{name:string,count:0,messages:{other:boolean,meassage:string}[]}}>({})
     const [active,setActive] = useState<string>("");
-    const [count,setCount] = useState<{[key:string]:number}>({});
     const ref = useRef<HTMLInputElement>(null);
     MainPlayer.Active = !hide;
     useEffect(()=>{

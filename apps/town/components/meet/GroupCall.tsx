@@ -6,11 +6,6 @@ import { MainPlayer } from '../game/MainPlayer';
 
 export default function GroupCall() {
   const [hide,setHide] = useState<boolean>(true);
-  function generateRandomString(length:number) {
-      const array = new Uint8Array(length);
-      crypto.getRandomValues(array);
-      return Array.from(array, (byte) => String.fromCharCode(65 + (byte % 26))).join(''); // A-Z letters
-    }
   return (
     <>
         <div onClick={()=>setHide(false)}>

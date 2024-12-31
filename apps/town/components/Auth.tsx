@@ -1,6 +1,5 @@
 'use client'
 import { SignInServerAction, SignUpServerAction } from '@/backend/serverAction';
-import { error, table } from 'console';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import React, {startTransition, useActionState, useEffect, useState } from "react";

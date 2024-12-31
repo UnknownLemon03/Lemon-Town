@@ -10,7 +10,7 @@ export default async function page() {
     if(!islogin) return redirect("/login")
     const isadmin = await isAdmin();
     if(!isadmin) return redirect("/dashboard");
-    const {data:Users,error,success} = await GetAdmins({})
+    const {data:Users} = await GetAdmins({})
   return (
     <>
         <AdminTable Users={Users}/>

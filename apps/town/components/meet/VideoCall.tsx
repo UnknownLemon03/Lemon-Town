@@ -1,14 +1,11 @@
 'use client';
 
 import {
-  CarouselLayout,
-  Chat,
   ControlBar,
   GridLayout,
   LiveKitRoom,
   ParticipantTile,
   RoomAudioRenderer,
-  useParticipants,
   useRemoteParticipants,
   useTracks,
 } from '@livekit/components-react';

@@ -13,7 +13,6 @@ export async function ConnectSoketSFU({room,Auth,name}:{room:number,Auth:string,
     return new Promise((res,rej)=>{
         socket = io(process.env.NEXT_PUBLIC_SOCKET_SFU_URL);
         // Join a room
-        const roomName = room;
         socket.on('connect',()=>{
 
         })

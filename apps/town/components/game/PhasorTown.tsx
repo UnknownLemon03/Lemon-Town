@@ -1,9 +1,8 @@
 'use client'
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, {useLayoutEffect, useRef, useState } from 'react';
 import { Game } from 'phaser'; // Correct import for Phaser modules
 import { Town } from './Town'; // Assuming this is your custom scene
-import { ConnectSoket, getSocket } from './Socket';
-import { cookies } from 'next/headers';
+import { ConnectSoket } from './Socket';
 import { MainPlayer } from './MainPlayer';
 import { getPlayerChar } from '@/backend/client';
 import { redirect } from 'next/navigation';

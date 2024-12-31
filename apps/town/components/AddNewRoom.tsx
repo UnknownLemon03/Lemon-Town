@@ -1,11 +1,9 @@
 'use client'
 import { GetAllMap } from '@/backend/database'
 import { AddRoomServerAction } from '@/backend/serverAction'
-import React, { useActionState, useEffect, useMemo, useState } from 'react'
-import { useFormState } from 'react-dom'
+import React, { useActionState, useEffect, useState } from 'react'
 
 export default function AddNewRoom() {
-  const Rooms = ["/map"]
   const [maps,setMaps] = useState<{[key:string]:string}>({})
   const [hide,setHide] = useState<Boolean>(false)
   const [preState,formAction , isPending] = useActionState(AddRoomServerAction,{error:"",success:false})

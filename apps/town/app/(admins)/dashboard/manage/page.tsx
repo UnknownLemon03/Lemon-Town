@@ -1,7 +1,5 @@
 import React from 'react'
-import Link from "next/link";
-import AddNewRoom from '@/components/AddNewRoom';
-import { DeleteRoomDB, GetAllMap, GetRoomDB, GetUserControlRooms } from '@/backend/database';
+import { GetAllMap, GetUserControlRooms } from '@/backend/database';
 import RoomRow from './roomsrow';
 import { isLogin, isRoomAdmin } from '@/backend/Auth';
 import { redirect } from 'next/navigation';

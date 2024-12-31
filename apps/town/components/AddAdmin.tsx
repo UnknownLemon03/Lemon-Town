@@ -1,5 +1,5 @@
 'use client'
-import { GetAdmins, SearchUser } from '@/backend/database';
+import { SearchUser } from '@/backend/database';
 import { UserTypeDB } from '@/backend/datatype';
 import { PreviewData } from 'next';
 import React, { ChangeEvent, startTransition, useActionState, useEffect, useState } from 'react'

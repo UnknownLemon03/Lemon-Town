@@ -1,12 +1,11 @@
 'use client'
 import { GetAdmins, SearchUser } from '@/backend/database'
 import { RoomTypeDB, UserTypeDB } from '@/backend/datatype'
-import { AddUserToRoomServerAction, DeleteRoomServerAction, DeleteSuperAdminServerAction } from '@/backend/serverAction'
+import { DeleteSuperAdminServerAction } from '@/backend/serverAction'
 import Link from 'next/link'
 import React, { startTransition, useActionState, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { z } from 'zod'
-type RoomType = z.infer<typeof RoomTypeDB>
 type RoomsUsers= {
   id: number;
   email: string;

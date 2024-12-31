@@ -2,9 +2,7 @@
 
 import { redirect } from "next/navigation";
 import Town from "./Town"
-import { parse } from "path";
 import { checkRoomAccess, isLogin } from "@/backend/Auth";
-import { log } from "console";
 import { GetMapUrlRoom } from "@/backend/cloude";
 export default async function page({searchParams}:{searchParams:{roomid:string}}) {
   const login = await isLogin();

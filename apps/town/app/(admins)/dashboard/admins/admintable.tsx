@@ -1,12 +1,10 @@
 'use client'
-import React, { useEffect, useState } from 'react'
-import { GetAdmins, GetAllUsers } from '@/backend/database';
+import React, {useState } from 'react'
 import UserRow from './userrow';
 import { UserTypeDB } from '@/backend/datatype';
 import AddAdmin from '@/components/AddAdmin';
 import { AddSuperAdminServerAction } from '@/backend/serverAction';
 export default function AdminTable({Users}:{Users:UserTypeDB[]}) {
-    const [data,setData] = useState<UserTypeDB[]>([])
     const [name,setName] = useState<string>("")
   return (
     <>

@@ -3,7 +3,6 @@ import { redirect } from 'next/navigation';
 import UserRow from './userrow';
 import AddUser from '@/components/AddUser';
 import { CheckRoom, GetRoomUsers } from '@/backend/database';
-import { date } from 'zod';
 import { AddUserToRoomServerAction } from '@/backend/serverAction';
 import { isLogin, isRoomAdmin } from '@/backend/Auth';
 export default async function page({params}:{params:{id:string}}) {
@@ -14,7 +13,7 @@ export default async function page({params}:{params:{id:string}}) {
     if(!isroomadmin) redirect("/dashboard");
 
 
-    const {id} = await params;
+    const {id} = params;
     const roomid = isNaN(parseInt(id)) ? -1 : parseInt(id);
     const {error:errorCheckRoom,success:successChcekroom} = await CheckRoom({roomid});
     if(!successChcekroom) return redirect("/dashboard/manage")

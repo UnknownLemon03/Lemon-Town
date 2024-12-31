@@ -1,8 +1,4 @@
 'use server'
-import { SignUp } from '@/backend/database';
-import Chat from '@/components/meet/Chat';
-import GroupCall from '@/components/meet/GroupCall';
-import TownBar from '@/components/meet/TownBar';
 import React from 'react'
 import Loading from '../loading';
 

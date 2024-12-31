@@ -1,9 +1,5 @@
 import { Scene } from "phaser";
-import { MainPlayer } from "./MainPlayer";
 import { Player } from "./Player";
-import { getSocket } from "./Socket";
-import { number } from "zod";
-import { Meet, UserChat } from "./SFU";
 
 
 export class SidePlayer extends Player {

@@ -1,7 +1,6 @@
 'use client'
 import Image from 'next/image'
-import React, { useEffect, useRef, useState } from 'react'
-import AskPermission from './Permission';
+import React, { useEffect, useState } from 'react'
 import { MainPlayer } from '../game/MainPlayer';
 import VideoCall from './VideoCall';
 import { MeetDataType } from '@/backend/client';

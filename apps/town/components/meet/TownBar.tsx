@@ -2,7 +2,6 @@ import React from 'react'
 import Chat from './Chat'
 import Call from './Call'
 import GroupCall from './GroupCall'
-import AskPermission from './Permission'
 
 export default function TownBar() {
  

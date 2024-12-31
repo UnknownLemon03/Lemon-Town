@@ -1,8 +1,7 @@
 'use client'
 import { Physics, Scene } from 'phaser';
 import { MainPlayer } from './MainPlayer';
-import { start } from 'repl';
-import { ConnectSoket, getSocket } from './Socket';
+import { getSocket } from './Socket';
 import { AllSidePlayers, SidePlayer } from './SidePlayer';
 
 export class Town extends Scene

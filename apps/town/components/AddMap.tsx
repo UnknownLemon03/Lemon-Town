@@ -1,22 +1,10 @@
 'use client'
 import { computeSHA256 } from '@/backend/client';
 import { AWSUpload } from '@/backend/cloude';
-import { SearchUser } from '@/backend/database';
-import { UserTypeDB } from '@/backend/datatype';
 import { AddMapServerAction } from '@/backend/serverAction';
-import { error } from 'console';
-import { PreviewData } from 'next';
 import {v4} from "uuid"
-import React, { ChangeEvent, FormEvent, startTransition, useActionState, useEffect, useState } from 'react'
+import React, { FormEvent, startTransition, useActionState, useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
-type ServerAction = (
-    formState: PreviewData, 
-    formData: FormData
-  ) => Promise<{
-    error: string;
-    success: boolean;
-    data: string;
-}>;
 export default function AddMap() {
     const [hide,setHide] = useState(false)
     const [preStat,action,isPending] = useActionState(AddMapServerAction,{success:false,error:""})
