@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build --no-lint",
     "start": "next start",
-    "lint": "echo 'Linting skipped'"
+    "lint": "echo 'Linting skipped'",
+    "prisma":"prisma generate"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.717.0",

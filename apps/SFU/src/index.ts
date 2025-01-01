@@ -152,8 +152,8 @@ io.on('connection', (socket: Socket) => {
     })
 });
 
-server.listen(8000, () => {
-    console.log('Server running on port 8000');
+server.listen(3002, () => {
+    console.log('Server running on port 3002');
 });
 
 
