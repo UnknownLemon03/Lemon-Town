@@ -85,9 +85,13 @@ export async function ConnectSoketSFU({room,Auth,name}:{room:number,Auth:string,
         socket.on("ResRoomJoinFresh",(data:{message:string})=>{
            toast.dismiss(data.message)
         })
-        socket.on("ResRoomJoinExist",(data:{message:string})=>{
-           toast.success(data.message)
+        socket.on("ResRoomJoinExist",(data:{message:string,name:string})=>{
+           toast.success(`${data.name} ${data.message}`)
         })
+        socket.on("MeetUpdate",({playerId,status}:{playerId:number,status:string})=>{
+            
+        })
+    
     })
 }   
 
@@ -109,7 +113,7 @@ export function send(){
 }
 
 export class UserChat{
-    static Users:{[id:string]:{name:string,count:number,messages:{other:boolean,meassage:string}[]}} = {}
+    static Users:{[id:string]:{name:string,count:number,messages:{other:boolean,meassage:string,new?:boolean}[]}} = {}
     static Subscribers:any = []
     static UserIdMap:{[id:number]:string} = {}// id:socketid
     static AddUser(data:{name:string,socketId:string,DBid:number}){
@@ -120,8 +124,13 @@ export class UserChat{
         return UserChat.Users[id]?.messages ?? [];
     }
     static AddChats(data:{socketId:string,message:string}){
-        UserChat.Users[data.socketId].count = UserChat.Users[data.socketId].count  +1;
-        UserChat.Users[data.socketId].messages.push({other:true,meassage:data.message})
+        if(UserChat.Users[data.socketId].count == 0){
+            // new message mark it as new 
+            UserChat.Users[data.socketId].messages.push({other:true,meassage:data.message,new:true})
+        }else{
+            UserChat.Users[data.socketId].messages.push({other:true,meassage:data.message})
+        }
+        UserChat.Users[data.socketId].count = UserChat.Users[data.socketId].count +1;
     }
     static SendMessage(data:{socketId:string,message:string}){
         getSocketSFU().emit("message",{socketId:data.socketId,message:data.message},()=>{})
@@ -169,10 +178,17 @@ export class Meet{
         Meet.MeetData = null;
         Meet.updateSubs();
     }
-    static sendMeetReq({id}:{id:number}){
-        getSocketSFU().emit("ReqRoomJoinFresh",{
-            receiver:UserChat.UserIdMap[id]
-        })
+    static sendMeetReq({id,socketId}:{id?:number,socketId?:string}){
+        if(id){
+            getSocketSFU().emit("ReqRoomJoinFresh",{
+                receiver:UserChat.UserIdMap[id]
+            })
+        }
+        if(socketId){
+            getSocketSFU().emit("ReqRoomJoinFresh",{
+                receiver:socketId
+            })
+        }
     }
     static receiveMeetReq({reqSocketId}:{reqSocketId:string}){
         const name = UserChat.Users[reqSocketId].name

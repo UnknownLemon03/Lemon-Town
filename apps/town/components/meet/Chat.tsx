@@ -1,20 +1,22 @@
 'use client'
 import Image from 'next/image';
 import React, { useEffect, useRef, useState } from 'react'
-import { UserChat } from '../game/SFU';
+import { Meet, UserChat } from '../game/SFU';
 import { MainPlayer } from '../game/MainPlayer';
 
 export default function Chat() {
     const [hide,setHide] = useState<boolean>(false);
-    const [users,setUsers] = useState<{[id:string]:{name:string,count:0,messages:{other:boolean,meassage:string}[]}}>({})
+    const [users,setUsers] = useState<{[id:string]:{name:string,count:0,messages:{other:boolean,meassage:string,new?:boolean}[]}}>({})
     const [active,setActive] = useState<string>("");
     const ref = useRef<HTMLInputElement>(null);
+    const bottomRef = useRef<HTMLSpanElement>(null);
     MainPlayer.Active = !hide;
     useEffect(()=>{
         UserChat.clear();
         UserChat.sub((newUsers) => setUsers({ ...newUsers }));
         UserChat.update()
     },[])
+
     function handleSend(){
         const message = ref.current?.value ?? ""
         console.log("wokring")
@@ -26,11 +28,18 @@ export default function Chat() {
             ref.current.value = ''; 
         }
         
+        setTimeout(()=>bottomRef.current?.scrollIntoView({ behavior: 'smooth' }),10)
+    }
+    function scrollEndhandel(e:string){
+        if(UserChat.Users[e].count == 0){
+            setTimeout(()=>bottomRef.current?.scrollIntoView({ behavior: 'instant' }),10)
+        }
+        UserChat.ChatVisit(e)   
     }
     if(active!=""){
-        UserChat.Users[active].count = 0;
+        UserChat.Users[active].count = 0;       
     }
-  return (
+  return (  
     <>
         <Image src={"/chat.png"} onClick={()=>setHide(e=>!e)}  width={50} height={50} alt="Chat" />
        {hide && <>
@@ -64,13 +73,13 @@ export default function Chat() {
                     <span className="font-bold">Users</span>
                 </div>
                 <div className="flex flex-col space-y-1 mt-4 -mx-2  overflow-y-auto">
-                    {Object.keys(users).map((e,i)=><button key={i} onClick={()=>{setActive(e);UserChat.ChatVisit(e);}} className="flex flex-row items-center hover:bg-gray-100 rounded-xl p-2">
+                    {Object.keys(users).map((e,i)=><button key={i} onClick={()=>{setActive(e);scrollEndhandel(e)}} className="flex flex-row items-center hover:bg-gray-100 rounded-xl p-2">
                     <div className="flex items-center justify-center h-8 w-8 bg-indigo-200 rounded-full">
                         {users[e].name[0].toUpperCase()}
                     </div>
                     <div className="ml-2 text-sm font-semibold">{users[e].name}</div>
-                    {UserChat.Users[e].count > 0 &&  <span className="inline-flex items-center justify-center w-5 h-5 ml-[50%]  ms-2 text-xs font-semibold text-white bg-indigo-300 rounded-full">
-                        {UserChat.Users[e].count}
+                    {active!=e && UserChat.Users[e].count > 0 &&  <span className="inline-flex items-center justify-center w-5 h-5 ml-[50%]  ms-2 text-xs font-semibold text-white bg-indigo-300 rounded-full">
+                        { UserChat.Users[e].count}
                     </span>}
                     </button>)}
                     {Object.keys(users).length == 0 && <span className='flex justify-center items-center'>No user found</span>}
@@ -88,11 +97,11 @@ export default function Chat() {
                         {/* ------------------------------------------------------------------------------ */}
                         {/* other chat */}
                         {users[active] && users[active].messages.map((e,i)=><Chats User='A' data={e} key={i} />)}
-                       
                         {/* ME */}
 
                         {/* ------------------------------------------------------------------------------ */}
                        </div>
+                        <span ref={bottomRef}></span>
                     </div>
                 </div>
                 <div
@@ -101,21 +110,9 @@ export default function Chat() {
                     <div>
                     <button
                         className="flex items-center justify-center text-gray-400 hover:text-gray-600"
+                        onClick={()=>Meet.sendMeetReq({socketId:active})}
                     >
-                        <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                        >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
-                        ></path>
-                        </svg>
+                        <Image src={"/call.png"} height={50} width={50} alt="call"/>
                     </button>
                     </div>
                     <div className="flex-grow ml-4">
@@ -195,10 +192,17 @@ export default function Chat() {
 }
 
 
-function  Chats({User,data}:{User:string,data:{other:boolean,meassage:string}}){
+function  Chats({User,data}:{User:string,data:{other:boolean,meassage:string,new?:boolean}}){
+    const ref = useRef<HTMLDivElement>(null);
+
+    useEffect(()=>{
+        if(data.new && ref.current){
+            ref.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    },[])
     return <>
     
-       {data.other ? <div className="col-start-1 col-end-8 p-3 rounded-lg"> 
+       {data.other ? <div ref={data.new ? ref : null} className="col-start-1 col-end-8 p-3 rounded-lg"> 
             <div className="flex flex-row items-center">
                 <div className="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-500 flex-shrink-0">
                     {User}

@@ -35,7 +35,7 @@ io.on('connection', (socket: Socket) => {
                 if(!userdata) return socket.disconnect();
                 const accessroom = await GetAuthRoom({roomid:response.roomId,userid:userdata.id});
                 if(!accessroom) return socket.disconnect();
-                socket.data.info = {id:userdata.id,name:userdata.name,roomid:response.roomId} as {id:number,name:string};
+                socket.data.info = {id:userdata.id,name:userdata.name,roomid:response.roomId} as {id:number,name:string,roomid:number};
                 
                 socket.join(`${response.roomId}`)
                 socket.to(`${response.roomId}`).emit("NewUser",{id:socket.id,name:userdata.name,DBid:userdata.id})
@@ -102,7 +102,7 @@ io.on('connection', (socket: Socket) => {
                 receiver?.emit("JoinMeetAccept",{isAdmin:false,AdminSocketId:data.admin,RoomName:roomdata.video.room,MeetToken:token,type:MeetType.private})
             }
         }else{
-            receiver?.emit("ResRoomJoinExist",{message:"Your Request have been rejected",name:adminSocket?.data.info.name})
+            receiver?.emit("ResRoomJoinExist",{message:" has rejected your request for existing meet",name:adminSocket?.data.info.name})
         }
     })
 
@@ -113,6 +113,11 @@ io.on('connection', (socket: Socket) => {
         console.log("working here")
         const receiverSocket = io.sockets.sockets.get(data.receiver);
         if(receiverSocket) receiverSocket.emit("ReqRoomJoinFresh",{sender:socket.id});
+    })
+
+    socket.on("MeetUpdate",({playerId,status}:{playerId:number,status:string})=>{
+        // send a join request to user 
+        socket.to(socket.data.info.roomid).emit("MeetUpdate",{playerId,status})
     })
 
     socket.on("ResRoomJoinFresh",async (data:{sender:string,accept:boolean})=>{
