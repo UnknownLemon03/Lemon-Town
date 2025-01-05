@@ -55,9 +55,7 @@ export async function ConnectSoketSFU({room,Auth,name}:{room:number,Auth:string,
         })
 
 
-        socket.on("JoinMeetAccept",(data:{isAdmin:boolean,AdminSocketId:string,RoomName:string,MeetToken:string,type:MeetType})=>{
-            Meet.setMeet(data);
-        })
+
         socket.on("JoinMeetReject",(data:{isAdmin:boolean,AdminSocketId:string,RoomName:string,MeetToken:string,type:MeetType})=>{
             // you have been rejected
         })
@@ -87,9 +85,6 @@ export async function ConnectSoketSFU({room,Auth,name}:{room:number,Auth:string,
         })
         socket.on("ResRoomJoinExist",(data:{message:string,name:string})=>{
            toast.success(`${data.name} ${data.message}`)
-        })
-        socket.on("MeetUpdate",({playerId,status}:{playerId:number,status:string})=>{
-            
         })
     
     })

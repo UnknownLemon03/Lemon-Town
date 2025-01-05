@@ -3,17 +3,18 @@ import { Player } from './Player';
 import { getSocket } from './Socket';
 import { AllSidePlayers } from './SidePlayer';
 import { Dispatch } from 'react';
+import { getSocketSFU } from './SFU';
 
 
 
 export class MainPlayer extends Player {
-    static NearPlayer: { [id: string]: string } = {}; // Using a record type for static player tracking
+    static NearPlayer: { [id: string]: {name:string,inMeeting:boolean} } = {}; // Using a record type for static player tracking
     static PlayerIconId:number =1;
     static RoomID:number
     static Name:string = "lemon"
     static Auth:string
     static Active:boolean = true;
-    static NearPlayerSub:Dispatch<any>;
+    static NearPlayerSub:Dispatch<({ [id: string]: {name:string,inMeeting:boolean} })>;
     //@ts-expect-error
     cursorKeys: Phaser.Input.Keyboard.CursorKey;
     playerSpeed: number;
@@ -61,9 +62,16 @@ export class MainPlayer extends Player {
         this.setOffset(0, 20);  // Optional: Set an offset to align body with sprite
 
     }
-
-    static AddPlayer(id: number,name:string): void {
-        MainPlayer.NearPlayer[id] = name;
+    static inMeetingUpdate(){
+        //{playerId:number,status:string}
+        getSocketSFU().emit("MeetUpdate",{status:true})
+    }
+    static exitMeetingUpdate(){
+        //{playerId:number,status:boolean}
+        getSocketSFU().emit("MeetUpdate",{status:false})
+    }
+    static AddPlayer(id: number,name:string,inMeeting:boolean): void {
+        MainPlayer.NearPlayer[id] = {name,inMeeting:inMeeting};
         if(MainPlayer.NearPlayerSub) MainPlayer.NearPlayerSub({...MainPlayer.NearPlayer})
     }
 

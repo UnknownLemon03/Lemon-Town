@@ -9,7 +9,7 @@ import { Meet } from '../game/SFU';
 export default function Call() {
     const [hide,setHide] = useState(true);
     const [hideMeet,setHideMeet] = useState(false);
-    const [nearPlayer,setNearPlayer] = useState<{[key:string]:string}>({})
+    const [nearPlayer,setNearPlayer] = useState<{[key:string]:{name:string,inMeeting:boolean}}>({})
     const [meetData,setMeetData] = useState<MeetDataType>(null);
     let id:any;
     useEffect(()=>{
@@ -46,10 +46,10 @@ export default function Call() {
                         
                         {Object.keys(nearPlayer).map(e=><span
                             onClick={()=>{Meet.sendMeetReq({id:parseInt(e)});setHide(e=>true);onHoverOut()}}
-                            className='bg-white block my-1 text-xl py-2 px-14 rounded-lg shadow-lg'
+                            className='bg-white  flex justify-between my-1 text-xl py-2 px-14 rounded-lg shadow-lg'
                             key={e}
                             >
-                            {nearPlayer[e]}
+                           <span className='mr-4'>{`${nearPlayer[e].name}`}</span>{nearPlayer[e].inMeeting && <Image  src="/busycall.png" height={25} width={25} alt="busy call"/>}
                         </span>)}
                     
                 </div>
@@ -57,7 +57,7 @@ export default function Call() {
             <div >
                 <Image src={"/call.png"} width={50} height={50} alt="Chat" />
             </div>
-            {meetData && <VideoCall MeetingToken={meetData.MeetToken} onDisconnected={()=>{Meet.exitMeet();onHoverOut()}} />}
+            {meetData && <VideoCall MeetingToken={meetData.MeetToken} onDisconnected={()=>{Meet.exitMeet();onHoverOut();MainPlayer.exitMeetingUpdate()}} />}
         </div>
     </>
   )

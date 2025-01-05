@@ -10,6 +10,7 @@ export class SidePlayer extends Player {
     playerName:string;
     nameText: Phaser.GameObjects.Text;
     DBid:number;
+    inMeeting:boolean = false;
     constructor(scene:Scene, x:number, y:number,socketID:string,PlayerIconId:number,name:string,id:number) {
         super(scene, x, y,PlayerIconId);
         this.currX = x;  

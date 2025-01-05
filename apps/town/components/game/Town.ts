@@ -3,6 +3,8 @@ import { Physics, Scene } from 'phaser';
 import { MainPlayer } from './MainPlayer';
 import { getSocket } from './Socket';
 import { AllSidePlayers, SidePlayer } from './SidePlayer';
+import { getSocketSFU, Meet } from './SFU';
+import { MeetType } from '@/backend/client';
 
 export class Town extends Scene
 {
@@ -177,6 +179,18 @@ export class Town extends Scene
             PlayerIconId:MainPlayer.PlayerIconId,
             name:MainPlayer.Name
         } });
+
+        getSocketSFU().on("MeetUpdate",(data:{id:number,status:boolean})=>{
+            if(MainPlayer.NearPlayer[`${data.id}`]){
+                MainPlayer.NearPlayer[`${data.id}`].inMeeting = data.status
+                MainPlayer.NearPlayerSub(MainPlayer.NearPlayer)
+                console.log( MainPlayer.NearPlayer)
+            }
+        })
+        getSocketSFU().on("JoinMeetAccept",(data:{isAdmin:boolean,AdminSocketId:string,RoomName:string,MeetToken:string,type:MeetType})=>{
+            Meet.setMeet(data);
+            MainPlayer.inMeetingUpdate();
+        })
     }
    
     update(time: number, delta: number): void {
@@ -185,12 +199,13 @@ export class Town extends Scene
         for(let i = 0 ; i < this.subPlayerGroup.getChildren().length;i++){
             const player:SidePlayer = this.subPlayerGroup.getChildren()[i]
             player.update(player.PlayerIconId);
+           
             const isNear = Math.abs(this.mainPlayer!.x - player.x) < nearDistance && Math.abs(this.mainPlayer!.y-player.y) < nearDistance
-            if(isNear && !MainPlayer.NearPlayer[player.DBid])
-                MainPlayer.AddPlayer(player.DBid,player.playerName);
-            else if(!isNear && MainPlayer.NearPlayer[player.DBid]) {
+            if(isNear && !MainPlayer.NearPlayer[player.DBid]){
+                MainPlayer.AddPlayer(player.DBid,player.playerName,player.inMeeting);
+            }else if(!isNear && MainPlayer.NearPlayer[player.DBid]) 
                 MainPlayer.RemovePlayer(player.DBid)
-            }
+            
             
         }
 

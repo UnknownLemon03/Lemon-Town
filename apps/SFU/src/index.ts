@@ -115,9 +115,11 @@ io.on('connection', (socket: Socket) => {
         if(receiverSocket) receiverSocket.emit("ReqRoomJoinFresh",{sender:socket.id});
     })
 
-    socket.on("MeetUpdate",({playerId,status}:{playerId:number,status:string})=>{
-        // send a join request to user 
-        socket.to(socket.data.info.roomid).emit("MeetUpdate",{playerId,status})
+    socket.on("MeetUpdate",({status}:{status:boolean})=>{
+        // send a join request to user
+        console.clear(); 
+        console.log({status,id:socket.data.info.id})
+        socket.to(`${socket.data.info.roomid}`).emit("MeetUpdate",{status,id:socket.data.info.id})
     })
 
     socket.on("ResRoomJoinFresh",async (data:{sender:string,accept:boolean})=>{
