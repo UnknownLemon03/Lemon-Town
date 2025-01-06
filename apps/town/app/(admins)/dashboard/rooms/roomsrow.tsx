@@ -35,7 +35,7 @@ export default function RoomRow({data}:{data:RoomType[]}) {
     </tr>)}
     {data.length == 0 && <tr >
         <td scope="row" colSpan={3} className="px-6 text-center py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-            No Room found
+            No Town found
         </td>
         
     </tr>}

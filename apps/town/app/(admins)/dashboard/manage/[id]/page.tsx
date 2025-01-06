@@ -22,8 +22,8 @@ export default async function page({params}:{params:{id:string}}) {
     const {data:RoomsUsers,error,success} = await GetRoomUsers({roomid})
   return (
     <>
-        <h4 className="text-2xl font-bold dark:text-white mb-5">Manage Room Users</h4>
-        <AddUser roomid={roomid} placeholder='Add User To Room' ServerAction={AddUserToRoomServerAction}/>
+        <h4 className="text-2xl font-bold dark:text-white mb-5">Manage Town Users</h4>
+        <AddUser roomid={roomid} placeholder='Add User To Town' ServerAction={AddUserToRoomServerAction}/>
         <div className="overflow-x-auto shadow-md sm:rounded-lg ">
             <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                 <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">

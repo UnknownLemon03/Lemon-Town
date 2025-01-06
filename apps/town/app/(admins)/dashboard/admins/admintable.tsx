@@ -8,7 +8,7 @@ export default function AdminTable({Users}:{Users:UserTypeDB[]}) {
     const [name,setName] = useState<string>("")
   return (
     <>
-        <h4 className="text-2xl font-bold dark:text-white mb-5">Managet Rooms</h4>
+        <h4 className="text-2xl font-bold dark:text-white mb-5">Managet Town</h4>
         
         <form className="flex items-center max-w-sm my-5">   
             <label htmlFor="simple-search" className="sr-only">Search</label>

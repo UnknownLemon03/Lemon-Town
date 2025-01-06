@@ -7,17 +7,17 @@ export default async function page() {
     const req = await GetRoomDB();
   return (
     <>
-        <h4 className="text-2xl font-bold dark:text-white mb-5">Create Room</h4>
+        <h4 className="text-2xl font-bold dark:text-white mb-5">Create Town</h4>
         <AddNewRoom/>
         <div className="overflow-x-auto shadow-md sm:rounded-lg max-h-[560px] scrollbar-hidden">
             <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                 <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
                         <th scope="col" className="px-6 py-3">
-                            Room ID 
+                            Town ID 
                         </th>
                         <th scope="col" className="px-6 py-3">
-                            Room Name
+                            Town Name
                         </th>
                         <th scope="col" className="px-6 py-3">
                             Action
