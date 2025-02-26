@@ -1,5 +1,5 @@
 'use client'
-import React, {useLayoutEffect, useRef, useState } from 'react';
+import React, {useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Game } from 'phaser'; // Correct import for Phaser modules
 import { Town } from './Town'; // Assuming this is your custom scene
 import { ConnectSoket } from './Socket';
@@ -13,13 +13,23 @@ export const dynamic = 'no-catch'
 export default function PhasorTown({mapurl,roomid,name,x,y}:{mapurl:string,roomid:number,name:string,x:number,y:number}) {
     const ref = useRef<HTMLDivElement>(null);
     const[loading,setLoading] = useState(true);
+    const [dim,setDim] = useState({
+        width: Math.floor(window.innerWidth*.8),
+        height: Math.floor(window.innerHeight*.8),
+    })
+    useEffect(()=>{
+        setDim({
+            width: Math.floor(window.innerWidth*.8),
+            height: Math.floor(window.innerHeight*.8),
+        })
+    },[window.innerHeight,window.innerHeight])
     let [game, setGame] = useState<Game | null>(null);
     useLayoutEffect(() => {
         if (!ref.current) return;
         const config:Phaser.Types.Core.GameConfig = {
             type: Phaser.AUTO,
-            width: 1600,
-            height: 780,
+            width: dim.width,
+            height: dim.height,
             zoom:1,
             parent: 'phasor-canvas-id',
             physics: {
