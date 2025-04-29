@@ -102,7 +102,7 @@ export default async function Home() {
           {stars.map((position, index) => (
         <img
           key={index}
-          src={"https://cdn.prod.website-files.com/63c885e8fb810536398b658a/640642d487bb294c34df2050_Star%206.svg"}
+          src={"/star.svg"}
           alt="Star"
           className="vibrate absolute w-2.5 h-2.5"
           style={{
